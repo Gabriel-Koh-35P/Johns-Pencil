@@ -27,9 +27,10 @@
 
 #define MAX_AMMO          3
 #define AMMO_CAP          5
-#define AMMO_PADDING      20.0f
-#define AMMO_PANEL_WIDTH  300.0f   /* generous fixed width, room for "Ammo: 10" */
-#define AMMO_PANEL_HEIGHT 120.0f    /* generous fixed height for the text size */
+#define AMMO_ICON_W     160.0f
+#define AMMO_ICON_H     80.0f
+#define AMMO_ICON_STEP  30.0f
+
 
 #define MAX_ENEMIES  3
 #define MAX_WALLS    3
@@ -344,27 +345,17 @@ static void DrawTargets(void)
 
 static void DrawAmmo(void)
 {
-    char text[32];
-    float x = 1200.0f;
-    float y = (float)CP_System_GetWindowHeight() - 30.0f;
+    int   i;
+    float x = playerPos.x + 120.0f;
+    float y = (float)CP_System_GetWindowHeight() - 60.0f;
 
-    sprintf_s(text, sizeof(text), "Ammo: %d", ammo);
+    for (i = 0; i < ammo; i++)
+    {
+        CP_Image img = (i == 0 && pendingPierce) ? bulletPierceImage : bulletImage;
 
-    CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_LEFT, CP_TEXT_ALIGN_V_BOTTOM);
-
-    /* panel: corner mode so (x,y) math lines up directly with the
-       text's own left/bottom anchor, instead of guessing center offsets */
-    CP_Settings_RectMode(CP_POSITION_CORNER);
-    CP_Settings_Fill(CP_Color_Create(0, 0, 0, 150));
-    CP_Graphics_DrawRect(x - AMMO_PADDING,
-        y - AMMO_PANEL_HEIGHT + AMMO_PADDING,
-        AMMO_PANEL_WIDTH,
-        AMMO_PANEL_HEIGHT);
-
-    DrawTextWithOutline(text, x, y);
-
-    CP_Settings_RectMode(CP_POSITION_CENTER);   /* restore, since every
-                                                    other rect in the game expects center mode */
+        CP_Image_DrawAdvanced(img, x + i * AMMO_ICON_STEP, y,
+            AMMO_ICON_W, AMMO_ICON_H, 255, -90.0f);
+    }
 }
 
 static void DrawQuestionPopup(void)
@@ -560,7 +551,7 @@ static void SetupLevel(int level)
         break;
 
     case 6:
-    default:  /* combines everything */
+    default:  /* combines everything */ 
         enemyCount = 3;
         wallCount = 3;
         boxCount = 1;
