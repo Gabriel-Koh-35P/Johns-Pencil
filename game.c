@@ -51,6 +51,8 @@ static CP_Image enemyImage;
 static CP_Image powerupBoxImage;
 static CP_Image bulletImage;
 static CP_Image bulletPierceImage;
+static CP_Image speedBtn1xImage;
+static CP_Image speedBtn2xImage;
 
 static int   awaitingQuestion;   /* 1 while the MCQ popup is showing, pauses the game */
 static int   correctOption;      /* index 0-3 of the correct answer this question */
@@ -111,6 +113,7 @@ static CP_Vector playerPos;
 static Bullet    bullet;
 static int       aiming;
 static int       ammo;
+static int speedBoosted;   /* 1 = current bullet is at 2x speed */
 
 /* ---------------------------------------------------------- */
 /* aiming */
@@ -607,6 +610,8 @@ void Game_Init(void)
     powerupBoxImage = CP_Image_Load("Assets/powerup_box.png");
     bulletImage = CP_Image_Load("Assets/pencil_projectile.png");
     bulletPierceImage = CP_Image_Load("Assets/pen_pierce_projectile.png");
+    speedBtn1xImage = CP_Image_Load("Assets/1xspd.png");
+    speedBtn2xImage = CP_Image_Load("Assets/2xspd.png");
 
     Progress_LoadBackground();
 
@@ -616,6 +621,7 @@ void Game_Init(void)
     
     bullet.active = 0;
     bullet.piercing = 0;
+	speedBoosted = 0;
     aiming = 0;
     ammo = MAX_AMMO;
     awaitingQuestion = 0;
@@ -664,6 +670,15 @@ void Game_Update(void)
             }
         }
 
+        if (bullet.active && CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT) &&
+            IsAreaClicked(140.0f, 60.0f, 220.0f, 80.0f, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
+        {
+            float factor = speedBoosted ? 0.5f : 2.0f;
+            bullet.vel.x *= factor;
+            bullet.vel.y *= factor;
+            speedBoosted = !speedBoosted;
+        }
+
         UpdateBullet(dt);
 
         if (AllTargetsHit())
@@ -709,7 +724,14 @@ void Game_Update(void)
         }
     }
 
+    if (bullet.active)
+    {
+        CP_Image_Draw(speedBoosted ? speedBtn2xImage : speedBtn1xImage,
+            140.0f, 60.0f, 440.0f, 160.0f, 255);
+    }
     DrawAmmo();
+
+
 
     if (awaitingQuestion)
         DrawQuestionPopup();
