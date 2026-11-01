@@ -16,6 +16,7 @@
 #include "utils.h"
 #include <math.h>
 #include <stdio.h>
+#include <time.h>
 
 #define PLAYER_DIAMETER  150.0f
 #define BULLET_DIAMETER  16.0f
@@ -41,6 +42,31 @@
 #define POWERUP_BOX_DIAMETER 100.0f
 #define POWERUP_BOX_DRAW_SIZE 300.0f
 
+/* boss (level 6) */
+#define BOSS_MAX_LIVES        3
+#define BOSS_DIAMETER         200.0f   /* collision */
+#define BOSS_DRAW_SIZE        270.0f   /* visual, bigger than the hitbox like TARGET_DRAW_SIZE */
+#define BOSS_LEVEL_AMMO       5        /* the boss takes 3 hits, so 5 bullets leaves 2 spare for misses, no powerups needed */
+
+/* where the boss is allowed to land when he teleports */
+#define BOSS_MARGIN_SIDE      40.0f    /* gap between his edge and the left/right of the window */
+#define BOSS_MARGIN_TOP       90.0f    /* leaves room for the life pips above him */
+#define BOSS_MARGIN_BOTTOM    160.0f   /* keeps him clear of the ammo icons */
+#define BOSS_CLEARANCE        30.0f    /* breathing room kept around him when he lands */
+#define BOSS_PLAYER_CLEARANCE 120.0f   /* extra distance kept away from the player */
+#define BOSS_MIN_JUMP         350.0f   /* a teleport must move him at least this far */
+#define BOSS_START_MIN_X      0.6f     /* his FIRST spot is on the right side: at least this fraction of the window width across */
+#define BOSS_TELEPORT_TRIES   500       /* random spots tried per pass */
+
+#define BOSS_PIP_SIZE         26.0f
+#define BOSS_PIP_STEP         40.0f
+
+/* area covered by the 1x/2x speed button (same numbers Game_Update uses for it) */
+#define UI_SPEED_X 140.0f
+#define UI_SPEED_Y 60.0f
+#define UI_SPEED_W 440.0f
+#define UI_SPEED_H 160.0f
+
 #define OPTION_COUNT 4
 #define OPTION_BTN_W 140.0f
 #define OPTION_BTN_H 80.0f
@@ -48,6 +74,7 @@
 
 static CP_Image playerImage;
 static CP_Image enemyImage;
+static CP_Image bossImage;
 static CP_Image powerupBoxImage;
 static CP_Image bulletImage;
 static CP_Image bulletPierceImage;
@@ -100,12 +127,20 @@ typedef struct
     int       active;
 } Powerup;   /* always a powerup box now */
 
+typedef struct
+{
+    CP_Vector pos;
+    int       lives;    /* BOSS_MAX_LIVES counting down to 0; at 0 he is defeated */
+    int       active;   /* 1 only on the boss level */
+} Boss;
+
 static Target  targets[MAX_ENEMIES];
 static Rect    walls[MAX_WALLS];
 static Rect    boxes[MAX_BOXES];
 static Door    doors[MAX_DOORS];
 static Button  buttons[MAX_DOORS];
 static Powerup powerups[MAX_POWERUPS];
+static Boss    boss;
 
 static int enemyCount, wallCount, boxCount, doorCount, powerupCount;
 
@@ -113,6 +148,8 @@ static CP_Vector playerPos;
 static Bullet    bullet;
 static int       aiming;
 static int       ammo;
+static int       levelStartAmmo;   /* bullets this level starts with */
+static int       seeded;           /* random generator seeded yet? */
 static int speedBoosted;   /* 1 = current bullet is at 2x speed */
 
 /* ---------------------------------------------------------- */
@@ -130,13 +167,28 @@ static CP_Vector AimDirection(CP_Vector from, CP_Vector to)
     return CP_Vector_Set(dx / len, dy / len);
 }
 
+static void AddAmmo(int n)
+{
+    /* the cap is never lower than what the level started with, and picking up
+       a reload never *reduces* the stock (level 6 starts above AMMO_CAP) */
+    int cap = (levelStartAmmo > AMMO_CAP) ? levelStartAmmo : AMMO_CAP;
+
+    if (ammo + n > cap)
+    {
+        if (ammo < cap)
+            ammo = cap;
+    }
+    else
+        ammo += n;
+}
+
 static void TriggerPowerupBox(void)
 {
     unsigned int roll = CP_Random_RangeInt(1, 4);
 
     if (roll == 1)
     {
-        ammo = (ammo + 2 >= AMMO_CAP) ? AMMO_CAP : ammo + 2;
+        AddAmmo(2);
     }
     else if (roll == 2)
     {
@@ -188,6 +240,110 @@ static void ResolveRectCollision(CP_Vector rectPos, float w, float h)
     }
 }
 
+/* ---------------------------------------------------------- */
+/* boss: random teleport */
+
+static int CircleOverlapsRect(CP_Vector c, float r, CP_Vector rectPos, float w, float h)
+{
+    /* closest point on the rectangle to the circle's center */
+    float nearX = CP_Math_ClampFloat(c.x, rectPos.x - w / 2.0f, rectPos.x + w / 2.0f);
+    float nearY = CP_Math_ClampFloat(c.y, rectPos.y - h / 2.0f, rectPos.y + h / 2.0f);
+    float dx = c.x - nearX;
+    float dy = c.y - nearY;
+
+    return (dx * dx + dy * dy < r * r);
+}
+
+/* is the boss allowed to stand at p? (nothing else is there) */
+static int IsBossSpotFree(CP_Vector p)
+{
+    float r = BOSS_DIAMETER / 2.0f + BOSS_CLEARANCE;
+    int   i;
+
+    for (i = 0; i < wallCount; i++)
+        if (CircleOverlapsRect(p, r, walls[i].pos, walls[i].w, walls[i].h))
+            return 0;
+
+    for (i = 0; i < boxCount; i++)
+        if (CircleOverlapsRect(p, r, boxes[i].pos, boxes[i].w, boxes[i].h))
+            return 0;
+
+    for (i = 0; i < doorCount; i++)
+    {
+        /* an open door no longer blocks anything, so only closed ones count */
+        if (!doors[i].open &&
+            CircleOverlapsRect(p, r, doors[i].pos, doors[i].w, doors[i].h))
+            return 0;
+
+        if (AreCirclesIntersecting(p.x, p.y, r,
+            buttons[i].pos.x, buttons[i].pos.y, BUTTON_DIAMETER / 2.0f))
+            return 0;
+    }
+
+    for (i = 0; i < enemyCount; i++)
+        if (!targets[i].hit &&
+            AreCirclesIntersecting(p.x, p.y, r,
+                targets[i].pos.x, targets[i].pos.y, TARGET_DIAMETER / 2.0f))
+            return 0;
+
+    for (i = 0; i < powerupCount; i++)
+        if (powerups[i].active &&
+            AreCirclesIntersecting(p.x, p.y, r,
+                powerups[i].pos.x, powerups[i].pos.y, POWERUP_BOX_DIAMETER / 2.0f))
+            return 0;
+
+    /* stay away from the player (his shots start there) */
+    if (AreCirclesIntersecting(p.x, p.y, r,
+        playerPos.x, playerPos.y, PLAYER_DIAMETER / 2.0f + BOSS_PLAYER_CLEARANCE))
+        return 0;
+
+    /* stay out from under the speed button */
+    if (CircleOverlapsRect(p, r, CP_Vector_Set(UI_SPEED_X, UI_SPEED_Y), UI_SPEED_W, UI_SPEED_H))
+        return 0;
+
+    return 1;
+}
+
+/* pick a random free spot that is at least minX pixels across the window
+   (0 = anywhere). Pass 1 also insists on a real jump (BOSS_MIN_JUMP); pass 2
+   accepts any free spot on that side; pass 3 drops the side rule if that side
+   has no room at all. */
+static void TeleportBoss(float minX)
+{
+    float w = (float)CP_System_GetWindowWidth();
+    float h = (float)CP_System_GetWindowHeight();
+    float r = BOSS_DIAMETER / 2.0f;
+    float right = w - BOSS_MARGIN_SIDE - r;
+    int   pass, tries;
+
+    for (pass = 0; pass < 3; pass++)
+    {
+        float left = BOSS_MARGIN_SIDE + r;
+
+        if (pass < 2 && minX > left)
+            left = minX;
+        if (left >= right)
+            continue;                       /* nothing fits on that side: next pass */
+
+        for (tries = 0; tries < BOSS_TELEPORT_TRIES; tries++)
+        {
+            CP_Vector p = CP_Vector_Set(
+                CP_Random_RangeFloat(left, right),
+                CP_Random_RangeFloat(BOSS_MARGIN_TOP + r, h - BOSS_MARGIN_BOTTOM - r));
+
+            if (pass == 0 && CP_Vector_Distance(p, boss.pos) < BOSS_MIN_JUMP)
+                continue;
+
+            if (IsBossSpotFree(p))
+            {
+                boss.pos = p;
+                return;
+            }
+        }
+    }
+    /* no free spot at all (only happens in very small windows): he stays put */
+}
+
 static void UpdateBullet(float dt)
 {
     float r = BULLET_DIAMETER / 2.0f;
@@ -231,7 +387,7 @@ static void UpdateBullet(float dt)
         }
     }
 
-        /* powerup boxes: always checked */
+    /* powerup boxes: always checked */
     for (i = 0; i < powerupCount; i++)
     {
         if (!powerups[i].active)
@@ -260,6 +416,19 @@ static void UpdateBullet(float dt)
             targets[i].hit = 1;
             bullet.active = 0;
         }
+    }
+
+    /* boss: every hit costs him a life and uses up the bullet;
+       if he survives, he teleports to a free spot */
+    if (bullet.active && boss.active && boss.lives > 0 &&
+        AreCirclesIntersecting(bullet.pos.x, bullet.pos.y, r,
+            boss.pos.x, boss.pos.y, BOSS_DIAMETER / 2.0f))
+    {
+        boss.lives--;
+        bullet.active = 0;
+
+        if (boss.lives > 0)
+            TeleportBoss(0.0f);          /* anywhere free */
     }
 }
 
@@ -346,6 +515,28 @@ static void DrawTargets(void)
     }
 }
 
+static void DrawBoss(void)
+{
+    int i;
+
+    if (!boss.active || boss.lives <= 0)
+        return;
+
+    CP_Image_Draw(bossImage, boss.pos.x, boss.pos.y, BOSS_DRAW_SIZE, BOSS_DRAW_SIZE, 255);
+
+    /* life pips above his head: red = life left, gray = life lost */
+    CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
+    for (i = 0; i < BOSS_MAX_LIVES; i++)
+    {
+        float px = boss.pos.x + (i - (BOSS_MAX_LIVES - 1) / 2.0f) * BOSS_PIP_STEP;
+        float py = boss.pos.y - BOSS_DIAMETER / 2.0f - 20.0f;
+
+        CP_Settings_Fill(i < boss.lives ? CP_Color_Create(255, 60, 60, 255)
+            : CP_Color_Create(60, 60, 60, 255));
+        CP_Graphics_DrawCircle(px, py, BOSS_PIP_SIZE);
+    }
+}
+
 static void DrawAmmo(void)
 {
     int   i;
@@ -400,10 +591,10 @@ static void DrawQuestionPopup(void)
                 if (i == correctOption)
                 {
                     if (CP_Random_GetBool())
-                        ammo = (ammo + 2 >= AMMO_CAP) ? AMMO_CAP : ammo + 2;
+                        AddAmmo(2);
                     else
                         pendingPierce = 1;
-                        ammo += 1;
+                    ammo += 1;
                 }
                 /* wrong answer: nothing happens, matches "bullet already deleted" */
 
@@ -420,6 +611,10 @@ static int AllTargetsHit(void)
     for (i = 0; i < enemyCount; i++)
         if (!targets[i].hit)
             return 0;
+
+    if (boss.active && boss.lives > 0)
+        return 0;
+
     return 1;
 }
 
@@ -440,6 +635,11 @@ static void SetupLevel(int level)
     for (i = 0; i < MAX_ENEMIES; i++) targets[i].hit = 0;
     for (i = 0; i < MAX_DOORS; i++) { doors[i].open = 0; buttons[i].pressed = 0; }
     for (i = 0; i < MAX_POWERUPS; i++) powerups[i].active = 1;
+
+    levelStartAmmo = MAX_AMMO;
+    boss.active = 0;
+    boss.lives = 0;
+    boss.pos = CP_Vector_Set(0.0f, 0.0f);
 
     doorCount = 0;
     boxCount = 0;
@@ -554,16 +754,12 @@ static void SetupLevel(int level)
         break;
 
     case 6:
-    default:  /* combines everything */ 
-        enemyCount = 3;
+    default:  /* combines everything */
+        enemyCount = 0;               /* no normal enemies: the boss is the only target */
         wallCount = 3;
         boxCount = 1;
         doorCount = 1;
         powerupCount = 2;
-
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.2f);
-        targets[1].pos = CP_Vector_Set(w * 0.85f, h * 0.65f);
-        targets[2].pos = CP_Vector_Set(w * 0.60f, h * 0.7f);
 
         walls[0].pos = CP_Vector_Set(w * 0.7f, h * 0.3f);
         walls[0].w = 30.0f;
@@ -592,6 +788,13 @@ static void SetupLevel(int level)
 
         powerups[1].pos = CP_Vector_Set(w * 0.55f, h * 0.75f);
         powerups[1].pos = CP_Vector_Set(w * 0.3f, h * 0.3f);
+
+        /* boss: the only target. Needs 3 hits and teleports after each one.
+           Placed last so the free-spot check sees everything else in the level. */
+        boss.active = 1;
+        boss.lives = BOSS_MAX_LIVES;
+        TeleportBoss(w * BOSS_START_MIN_X);   /* his starting spot: right side, away from the player */
+        levelStartAmmo = BOSS_LEVEL_AMMO;
         break;
     }
 }
@@ -612,18 +815,25 @@ void Game_Init(void)
     bulletPierceImage = CP_Image_Load("Assets/pen_pierce_projectile.png");
     speedBtn1xImage = CP_Image_Load("Assets/1xspd.png");
     speedBtn2xImage = CP_Image_Load("Assets/2xspd.png");
+    bossImage = CP_Image_Load("Assets/boss_enemy.png");
 
     Progress_LoadBackground();
+
+    if (!seeded)
+    {
+        CP_Random_Seed((int)time(NULL));   /* different random rolls every launch */
+        seeded = 1;
+    }
 
     playerPos = CP_Vector_Set(w * 0.1f, h * 0.85f);
 
     SetupLevel(Progress_GetCurrentLevel());
-    
+
     bullet.active = 0;
     bullet.piercing = 0;
-	speedBoosted = 0;
+    speedBoosted = 0;
     aiming = 0;
-    ammo = MAX_AMMO;
+    ammo = levelStartAmmo;
     awaitingQuestion = 0;
     pendingPierce = 0;
 
@@ -707,6 +917,7 @@ void Game_Update(void)
     DrawDoorsAndButtons();
     DrawPowerups();
     DrawTargets();
+    DrawBoss();
 
     CP_Image_Draw(playerImage, playerPos.x, playerPos.y, PLAYER_DIAMETER, PLAYER_DIAMETER, 255);
 
