@@ -11,7 +11,7 @@
 #include "cprocessing.h"
 #include "progress.h"
 
-#define LEVEL_COUNT 6
+#define LEVEL_COUNT 12
 
 static int unlocked[LEVEL_COUNT];
 static int currentLevel;
