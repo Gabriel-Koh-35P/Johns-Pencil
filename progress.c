@@ -11,7 +11,7 @@
 #include "cprocessing.h"
 #include "progress.h"
 
-#define LEVEL_COUNT 12
+#define LEVEL_COUNT 18
 
 static int unlocked[LEVEL_COUNT];
 static int currentLevel;
@@ -52,7 +52,8 @@ void Progress_Init(void)
 
     unlocked[0] = 1;    /* level 1 always available */
     for (i = 1; i < LEVEL_COUNT; i++)
-        unlocked[i] = 0;
+		// this is the line that needs to be changed to 1 for all levels to be unlocked for testing purposes
+		unlocked[i] = 0;  /* DEBUG: was 1 */ // user must unlock levels in order, so only the first is unlocked at the start
 
     currentLevel = 1;
 }

@@ -754,7 +754,7 @@ static void SetupLevel(int level)
         break;
 
     case 6:
-    default:  /* combines everything */
+      /* combines everything */
         enemyCount = 0;               /* no normal enemies: the boss is the only target */
         wallCount = 3;
         boxCount = 1;
@@ -795,6 +795,139 @@ static void SetupLevel(int level)
         boss.lives = BOSS_MAX_LIVES;
         TeleportBoss(w * BOSS_START_MIN_X);   /* his starting spot: right side, away from the player */
         levelStartAmmo = BOSS_LEVEL_AMMO;
+        break;
+
+	case 7: //placeholder levels for testing
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
+        break;
+
+    case 8: //placeholder levels for testing
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
+        break;
+
+    case 9: //placeholder levels for testing
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
+        break;
+
+    case 10: //placeholder levels for testing
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
+        break;
+
+    case 11: //placeholder levels for testing
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
+        break;
+
+    case 12: //placeholder levels for testing
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
+        break;
+
+    case 13: //placeholder levels for testing
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
+        break;
+
+    case 14: //placeholder levels for testing
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
+        break;
+
+    case 15: //placeholder levels for testing
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
+        break;
+
+    case 16: //placeholder levels for testing
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
+        break;
+
+    case 17: //placeholder levels for testing
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
+        break;
+
+    case 18: //placeholder levels for testing
+        default: 
+        enemyCount = 1;
+        wallCount = 1;
+
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+
+        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].w = 30.0f;
+        walls[0].h = 500.0f;
         break;
     }
 }

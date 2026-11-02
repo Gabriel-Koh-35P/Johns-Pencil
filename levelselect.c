@@ -16,9 +16,9 @@
 #include "utils.h"
 #include <stdio.h>
 
-#define LEVEL_COUNT 6
+#define LEVEL_COUNT 18 // total number of levels in the game
 #define LEVELS_PER_PAGE 6 // 2 rows of 3 levels each page
-#define PAGE_COUNT 2 // currently 
+#define PAGE_COUNT 3 // currently how many "chapters" or pages of levels there are
 #define COLS 3
 #define BTN_W   250.0f
 #define BTN_H   140.0f
@@ -36,6 +36,7 @@ static CP_Image lockedImage;
 static CP_Image backBtnImage;
 static CP_Image pageTitleImage;
 static CP_Image pageTitle2Image;
+static CP_Image pageTitle3Image;
 static CP_Image arrowBtnImage;
 
 static float btnX[LEVEL_COUNT];
@@ -71,7 +72,8 @@ void Level_Select_Init(void)
     lockedImage = CP_Image_Load("Assets/locked_level.png");
     backBtnImage = CP_Image_Load("Assets/menu_back_btn.png");
     pageTitleImage = CP_Image_Load("Assets/page_1.png");     /* NEW */
-    pageTitle2Image = CP_Image_Load("Assets/page_2.png");
+    pageTitle2Image = CP_Image_Load("Assets/page_2.png");    /* NEW */
+    pageTitle3Image = CP_Image_Load("Assets/page_3.png");    /* NEW */
     arrowBtnImage = CP_Image_Load("Assets/next_page.png");   /* NEW */
 
 	for (i = 0; i < LEVELS_PER_PAGE; i++) // changed: positions are now calculated based on the current page and the number of levels per page
@@ -86,7 +88,8 @@ void Level_Select_Init(void)
     backX = w * 0.5f;
     backY = h * 0.85f;
 
-    currentPage = 0;
+    //currentPage = 0; /* REMOVE: this resets to page 1 every time you re-enter */
+    currentPage = (Progress_GetCurrentLevel() - 1) / LEVELS_PER_PAGE;
 	pageBtnX = w * 0.85f;
 	pageBtnY = h * 0.85f;
 }
@@ -119,40 +122,64 @@ void Level_Select_Update(void)
         CP_Image_DrawAdvanced(arrowBtnImage, pageBtnDrawX, pageBtnY, PAGE_BTN_W, PAGE_BTN_H, 255, 180.0f);
 
     /* page title */
-    CP_Image title = (currentPage == 0) ? pageTitleImage : pageTitle2Image;
+    CP_Image title = pageTitleImage;
+    if (currentPage == 1) title = pageTitle2Image;
+    else if (currentPage == 2) title = pageTitle3Image;
     CP_Image_Draw(title, w * 0.5f, h * 0.1f, 300.0f, 86.0f, 255);
 
-	////check if the page button is clicked
- //   char pageText[16];
- //   sprintf_s(pageText, sizeof(pageText), "Page %d", currentPage + 1);
- //   CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
- //   CP_Font_DrawText(pageText, w * 0.5f, h * 0.08f);
+    /* next arrow (right side), hidden on the last page */
+    if (currentPage < PAGE_COUNT - 1)
+        CP_Image_Draw(arrowBtnImage, w * 0.85f, pageBtnY, PAGE_BTN_W, PAGE_BTN_H, 255);
+
+    /* previous arrow (left side, flipped), hidden on the first page */
+    if (currentPage > 0)
+        CP_Image_DrawAdvanced(arrowBtnImage, w * 0.15f, pageBtnY, PAGE_BTN_W, PAGE_BTN_H, 255, 180.0f);
 
     if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
     {
         float mx = CP_Input_GetMouseX();
         float my = CP_Input_GetMouseY();
+        float w = (float)CP_System_GetWindowWidth();   /* CHANGE: needed for arrow positions */
 
         for (i = 0; i < LEVELS_PER_PAGE; i++)
         {
 			int levelNum = currentPage * LEVELS_PER_PAGE + i + 1;
 
-            if (Progress_IsUnlocked(i + 1) &&
+            /* CHANGE 1: was Progress_IsUnlocked(i + 1).
+               Now uses levelNum so page 2 checks levels 7-12. */
+            if (Progress_IsUnlocked(levelNum) &&
                 IsAreaClicked(btnX[i], btnY[i], BTN_W, BTN_H, mx, my))
             {
-                Progress_SetCurrentLevel(i + 1);
+                /* CHANGE 2: was Progress_SetCurrentLevel(i + 1).
+                   Now uses levelNum so page 2 loads levels 7-12. */
+                Progress_SetCurrentLevel(levelNum);
                 CP_Engine_SetNextGameState(Game_Init, Game_Update, Game_Exit);
                 return;
             }
         }
 
-        /* next / previous page button */
-        if (IsAreaClicked(pageBtnDrawX, pageBtnY, PAGE_BTN_W, PAGE_BTN_H, mx, my))
-            currentPage = (currentPage + 1) % PAGE_COUNT;
+        /* CHANGE: next page (right arrow), not on the last page */
+        if (currentPage < PAGE_COUNT - 1 &&
+            IsAreaClicked(w * 0.85f, pageBtnY, PAGE_BTN_W, PAGE_BTN_H, mx, my))
+        {
+            currentPage++;
+            return;
+        }
+
+        /* CHANGE: previous page (left arrow), not on the first page */
+        if (currentPage > 0 &&
+            IsAreaClicked(w * 0.15f, pageBtnY, PAGE_BTN_W, PAGE_BTN_H, mx, my))
+        {
+            currentPage--;
+            return;
+        }
 
         /* back button */
-        if (IsAreaClicked(backX, backY, BACK_BTN_W, BACK_BTN_H, mx, my))
+        if (IsAreaClicked(backX, backY, BACK_BTN_W, BACK_BTN_H, mx, my)) {
+			currentPage = 0; /* reset to page 1 when returning to level select */
             CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
+        }
+            
     }
 }
 
