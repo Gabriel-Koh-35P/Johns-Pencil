@@ -15,7 +15,7 @@
 #include "progress.h"
 #include "utils.h"
 
-#define LEVEL_COUNT   6
+#define LEVEL_COUNT   12  //number of leveles in the game
 
 #define BANNER_W      800.0f
 #define BANNER_H      250.0f
