@@ -1006,6 +1006,7 @@ void Game_Update(void)
                 bullet.pos = playerPos;
                 bullet.vel = CP_Vector_Set(dir.x * BULLET_SPEED, dir.y * BULLET_SPEED);
                 bullet.active = 1;
+                speedBoosted = 0;   /* new bullet always starts at 1x */
                 bullet.piercing = pendingPierce;
                 pendingPierce = 0;
                 aiming = 0;
@@ -1014,7 +1015,7 @@ void Game_Update(void)
         }
 
         if (bullet.active && CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT) &&
-            IsAreaClicked(140.0f, 60.0f, 220.0f, 80.0f, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
+            IsAreaClicked(140.0f, 60.0f, 440.0f, 160.0f, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
         {
             float factor = speedBoosted ? 0.5f : 2.0f;
             bullet.vel.x *= factor;
