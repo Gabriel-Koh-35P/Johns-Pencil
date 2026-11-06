@@ -28,9 +28,10 @@
 
 #define MAX_AMMO          3
 #define AMMO_CAP          5
-#define AMMO_ICON_W     160.0f
-#define AMMO_ICON_H     80.0f
+#define AMMO_ICON_W     90.0f
+#define AMMO_ICON_H     90.0f
 #define AMMO_ICON_STEP  30.0f
+#define PEN_EXTRA_GAP 15.0f   /* tweak to taste */
 
 
 #define MAX_ENEMIES  3
@@ -78,12 +79,16 @@ static CP_Image bossImage;
 static CP_Image powerupBoxImage;
 static CP_Image bulletImage;
 static CP_Image bulletPierceImage;
+static CP_Image bulletAmmoImage;
+static CP_Image bulletPierceAmmoImage;
+static CP_Image markerImage;
 static CP_Image speedBtn1xImage;
 static CP_Image speedBtn2xImage;
 
 static int   awaitingQuestion;   /* 1 while the MCQ popup is showing, pauses the game */
 static int   correctOption;      /* index 0-3 of the correct answer this question */
-static int   pendingPierce;      /* 1: the next fired bullet starts piercing */
+static int   pierceAmmo;        /* how many of our ammmo are pens*/
+static int   usePen;          /* 1: the next fired bullet is a pen, not a pencil */
 
 static float optionX[OPTION_COUNT];
 static float optionY;
@@ -192,8 +197,8 @@ static void TriggerPowerupBox(void)
     }
     else if (roll == 2)
     {
-        pendingPierce = 1;
-        ammo += 1;
+        pierceAmmo += 1;
+        AddAmmo(1);
     }
     else
     {
@@ -540,14 +545,23 @@ static void DrawBoss(void)
 static void DrawAmmo(void)
 {
     int   i;
+    int   normalCount = ammo - pierceAmmo;
     float x = playerPos.x + 120.0f;
     float y = (float)CP_System_GetWindowHeight() - 60.0f;
 
     for (i = 0; i < ammo; i++)
     {
-        CP_Image img = (i == 0 && pendingPierce) ? bulletPierceImage : bulletImage;
+        /* icon 0 is the next shot: pens first if selected, else pencils first */
+        int isPen = usePen ? (i < pierceAmmo) : (i >= normalCount);
+        CP_Image img = isPen ? bulletPierceAmmoImage : bulletAmmoImage;
 
-        CP_Image_DrawAdvanced(img, x + i * AMMO_ICON_STEP, y,
+        float drawX = x + i * AMMO_ICON_STEP;
+
+        /* push pens further out: gap before the first pen of the group */
+        if (isPen)
+            drawX += PEN_EXTRA_GAP;
+
+        CP_Image_DrawAdvanced(img, drawX, y,
             AMMO_ICON_W, AMMO_ICON_H, 255, -90.0f);
     }
 }
@@ -591,10 +605,14 @@ static void DrawQuestionPopup(void)
                 if (i == correctOption)
                 {
                     if (CP_Random_GetBool())
+                    {
                         AddAmmo(2);
+                    }
                     else
-                        pendingPierce = 1;
-                    ammo += 1;
+                    {
+                        pierceAmmo += 1;
+                        AddAmmo(1);
+                    }
                 }
                 /* wrong answer: nothing happens, matches "bullet already deleted" */
 
@@ -947,6 +965,9 @@ void Game_Init(void)
     bulletImage = CP_Image_Load("Assets/pencil_projectile.png");
     bulletPierceImage = CP_Image_Load("Assets/pen_pierce_projectile.png");
     speedBtn1xImage = CP_Image_Load("Assets/1xspd.png");
+	bulletAmmoImage = CP_Image_Load("Assets/pencil_ammo.png");
+    bulletPierceAmmoImage = CP_Image_Load("Assets/pen_ammo.png");
+    markerImage = CP_Image_Load("Assets/marker.png");
     speedBtn2xImage = CP_Image_Load("Assets/2xspd.png");
     bossImage = CP_Image_Load("Assets/boss_enemy.png");
 
@@ -968,7 +989,8 @@ void Game_Init(void)
     aiming = 0;
     ammo = levelStartAmmo;
     awaitingQuestion = 0;
-    pendingPierce = 0;
+    pierceAmmo = 0;
+    usePen = 0;
 
     {
         float totalWidth = OPTION_COUNT * OPTION_BTN_W + (OPTION_COUNT - 1) * OPTION_GAP;
@@ -992,6 +1014,10 @@ void Game_Update(void)
 
     if (!awaitingQuestion)
     {
+        /* swap between pen and normal pencil */
+        if (CP_Input_KeyTriggered(KEY_E) && pierceAmmo > 0)
+            usePen = !usePen;
+
         if (!bullet.active)
         {
             if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
@@ -1007,13 +1033,23 @@ void Game_Update(void)
                 bullet.vel = CP_Vector_Set(dir.x * BULLET_SPEED, dir.y * BULLET_SPEED);
                 bullet.active = 1;
                 speedBoosted = 0;   /* new bullet always starts at 1x */
-                bullet.piercing = pendingPierce;
-                pendingPierce = 0;
+
+                /* if every remaining shot is a pen, force the pen */
+                if (ammo <= pierceAmmo)
+                    usePen = 1;
+
+                bullet.piercing = usePen;
+                if (usePen)
+                {
+                    pierceAmmo--;
+                    if (pierceAmmo <= 0)
+                        usePen = 0;
+                }
                 aiming = 0;
                 ammo--;
             }
         }
-
+    
         if (bullet.active && CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT) &&
             IsAreaClicked(140.0f, 60.0f, 440.0f, 160.0f, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
         {
@@ -1054,6 +1090,7 @@ void Game_Update(void)
     DrawBoss();
 
     CP_Image_Draw(playerImage, playerPos.x, playerPos.y, PLAYER_DIAMETER, PLAYER_DIAMETER, 255);
+
 
     if (bullet.active)
     {
