@@ -88,6 +88,11 @@ static int   pendingPierce;      /* 1: the next fired bullet starts piercing */
 static float optionX[OPTION_COUNT];
 static float optionY;
 
+static CP_Sound shootSound;
+static CP_Sound enemyDeathSound;
+static CP_Sound enemyDamageSound;
+static CP_Sound powerupSound;
+
 typedef struct
 {
     CP_Vector pos;
@@ -415,6 +420,7 @@ static void UpdateBullet(float dt)
         {
             targets[i].hit = 1;
             bullet.active = 0;
+			CP_Sound_Play(enemyDeathSound);
         }
     }
 
@@ -426,6 +432,7 @@ static void UpdateBullet(float dt)
     {
         boss.lives--;
         bullet.active = 0;
+        CP_Sound_Play(enemyDamageSound);
 
         if (boss.lives > 0)
             TeleportBoss(0.0f);          /* anywhere free */
@@ -590,6 +597,7 @@ static void DrawQuestionPopup(void)
             {
                 if (i == correctOption)
                 {
+					CP_Sound_Play(powerupSound);
                     if (CP_Random_GetBool())
                         AddAmmo(2);
                     else
@@ -950,6 +958,12 @@ void Game_Init(void)
     speedBtn2xImage = CP_Image_Load("Assets/2xspd.png");
     bossImage = CP_Image_Load("Assets/boss_enemy.png");
 
+    shootSound = CP_Sound_Load("Assets/pencil_shoot.mp3");
+	enemyDamageSound = CP_Sound_Load("Assets/enemy_damage.mp3");
+	enemyDeathSound = CP_Sound_Load("Assets/enemy_death.mp3");
+    powerupSound = CP_Sound_Load("Assets/powerup_get.mp3");
+
+
     Progress_LoadBackground();
 
     if (!seeded)
@@ -978,6 +992,7 @@ void Game_Init(void)
             optionX[i] = startX + i * (OPTION_BTN_W + OPTION_GAP);
         optionY = h * 0.55f;
     }
+    
 }
 
 void Game_Update(void)
@@ -1011,6 +1026,7 @@ void Game_Update(void)
                 pendingPierce = 0;
                 aiming = 0;
                 ammo--;
+                CP_Sound_Play(shootSound);
             }
         }
 
@@ -1084,4 +1100,8 @@ void Game_Update(void)
 
 void Game_Exit(void)
 {
+    CP_Sound_Free(shootSound);
+    CP_Sound_Free(enemyDamageSound);
+    CP_Sound_Free(enemyDeathSound);
+    CP_Sound_Free(powerupSound);
 }
