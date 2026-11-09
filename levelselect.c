@@ -24,6 +24,8 @@
 #define BTN_H   140.0f
 #define LOCKED_BTN_W   300.0f
 #define LOCKED_BTN_H   180.0f
+#define LOCKED2_W   300.0f
+#define LOCKED2_H   180.0f
 #define BTN_GAP_X 60.0f
 #define BTN_GAP_Y 60.0f
 #define BACK_BTN_W 500.0f
@@ -33,6 +35,7 @@
 
 static CP_Image levelImages[LEVEL_COUNT];
 static CP_Image lockedImage;
+static CP_Image lockedImage2; /* locked image for page 2*/
 static CP_Image backBtnImage;
 static CP_Image pageTitleImage;
 static CP_Image pageTitle2Image;
@@ -70,6 +73,7 @@ void Level_Select_Init(void)
     }
 
     lockedImage = CP_Image_Load("Assets/locked_level.png");
+	lockedImage2 = CP_Image_Load("Assets/locked_level2.png"); /* locked image for page 2 */
     backBtnImage = CP_Image_Load("Assets/menu_back_btn.png");
     pageTitleImage = CP_Image_Load("Assets/page_1.png");     /* NEW */
     pageTitle2Image = CP_Image_Load("Assets/page_2.png");    /* NEW */
@@ -108,7 +112,12 @@ void Level_Select_Update(void)
     {
 		int levelNum = currentPage * LEVELS_PER_PAGE + i + 1;
         int isUnlocked = Progress_IsUnlocked(levelNum);
-        CP_Image img = isUnlocked ? levelImages[levelNum - 1] : lockedImage;
+    
+        CP_Image img = isUnlocked ? levelImages[levelNum - 1]
+            : (currentPage == 1 ? lockedImage2 : lockedImage);
+
+        float lw = (currentPage == 1) ? LOCKED2_W : LOCKED_BTN_W;
+        float lh = (currentPage == 1) ? LOCKED2_H : LOCKED_BTN_H;
 
         CP_Image_Draw(img, btnX[i], btnY[i], isUnlocked ? BTN_W : LOCKED_BTN_W, isUnlocked ? BTN_H : LOCKED_BTN_H, 255);
     }

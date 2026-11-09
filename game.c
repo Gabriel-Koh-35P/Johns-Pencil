@@ -34,8 +34,8 @@
 #define PEN_EXTRA_GAP 15.0f   /* tweak to taste */
 
 
-#define MAX_ENEMIES  3
-#define MAX_WALLS    3
+#define MAX_ENEMIES  4
+#define MAX_WALLS    5
 #define MAX_BOXES    3
 #define MAX_DOORS    2
 #define MAX_POWERUPS 3
@@ -988,70 +988,174 @@ static void SetupLevel(int level)
         levelStartAmmo = BOSS_LEVEL_AMMO;
         break;
 
-    case 7: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+    case 7: // two doors + two buttons
+        enemyCount = 2;
+        wallCount = 2;
+        doorCount = 2;
+		powerupCount = 1;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.2f);
+        targets[1].pos = CP_Vector_Set(w * 0.85f, h * 0.75f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].pos = CP_Vector_Set(w * 0.45f, h * 0.5f);
+        walls[0].w = 30.0f;  walls[0].h = 700.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.8f, h * 0.48f);
+        walls[1].w = 300.0f; walls[1].h = 30.0f;
+
+        doors[0].pos = CP_Vector_Set(w * 0.7f, h * 0.22f);
+        doors[0].w = 30.0f;  doors[0].h = 300.0f;
+        doors[1].pos = CP_Vector_Set(w * 0.7f, h * 0.75f);
+        doors[1].w = 30.0f;  doors[1].h = 300.0f;
+
+        buttons[0].pos = CP_Vector_Set(w * 0.25f, h * 0.15f);
+        buttons[1].pos = CP_Vector_Set(w * 0.25f, h * 0.45f);
+
+        powerups[0].pos = CP_Vector_Set(w * 0.3f, h * 0.3f);
         break;
 
-    case 8: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+	case 8: // boxes + 2 powerups + walls + enemies
+        enemyCount = 3;
+        wallCount = 3;
+        boxCount = 2;
+        powerupCount = 2;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.15f);
+        targets[1].pos = CP_Vector_Set(w * 0.85f, h * 0.5f);
+        targets[2].pos = CP_Vector_Set(w * 0.6f, h * 0.8f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].pos = CP_Vector_Set(w * 0.4f, h * 0.4f);
+        walls[0].w = 30.0f;  walls[0].h = 600.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.7f, h * 0.3f);
+        walls[1].w = 30.0f;  walls[1].h = 400.0f;
+        walls[2].pos = CP_Vector_Set(w * 0.75f, h * 0.65f);
+        walls[2].w = 250.0f; walls[2].h = 30.0f;
+
+        boxes[0].pos = CP_Vector_Set(w * 0.25f, h * 0.5f);
+        boxes[0].w = 80.0f;  boxes[0].h = 80.0f;
+        boxes[1].pos = CP_Vector_Set(w * 0.55f, h * 0.6f);
+        boxes[1].w = 80.0f;  boxes[1].h = 80.0f;
+
+        powerups[0].pos = CP_Vector_Set(w * 0.25f, h * 0.25f);
+        powerups[1].pos = CP_Vector_Set(w * 0.55f, h * 0.3f);
         break;
 
-    case 9: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+	case 9: // zigzag level
+        enemyCount = 2;
+        wallCount = 3;
+        boxCount = 2;
+        powerupCount = 1;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        targets[0].pos = CP_Vector_Set(w * 0.88f, h * 0.2f);
+        targets[1].pos = CP_Vector_Set(w * 0.88f, h * 0.75f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].pos = CP_Vector_Set(w * 0.4f, h * 0.7f);
+        walls[0].w = 30.0f;  walls[0].h = 300.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.55f, h * 0.25f);
+        walls[1].w = 30.0f;  walls[1].h = 300.0f;
+        walls[2].pos = CP_Vector_Set(w * 0.7f, h * 0.7f);
+        walls[2].w = 30.0f;  walls[2].h = 300.0f;
+
+        boxes[0].pos = CP_Vector_Set(w * 0.25f, h * 0.4f);
+        boxes[0].w = 80.0f;  boxes[0].h = 80.0f;
+        boxes[1].pos = CP_Vector_Set(w * 0.62f, h * 0.5f);
+        boxes[1].w = 80.0f;  boxes[1].h = 80.0f;
+
+        powerups[0].pos = CP_Vector_Set(w * 0.25f, h * 0.2f);
+
+        levelStartAmmo = 5;
         break;
 
     case 10: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+        enemyCount = 3;
+        wallCount = 3;
+        doorCount = 2;
+        powerupCount = 2;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.2f);
+        targets[1].pos = CP_Vector_Set(w * 0.85f, h * 0.8f);
+        targets[2].pos = CP_Vector_Set(w * 0.55f, h * 0.2f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].pos = CP_Vector_Set(w * 0.4f, h * 0.5f);
+        walls[0].w = 30.0f;  walls[0].h = 600.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.7f, h * 0.5f);
+        walls[1].w = 30.0f;  walls[1].h = 300.0f;
+        walls[2].pos = CP_Vector_Set(w * 0.55f, h * 0.35f);
+        walls[2].w = 200.0f; walls[2].h = 30.0f;
+
+        doors[0].pos = CP_Vector_Set(w * 0.7f, h * 0.2f);
+        doors[0].w = 30.0f;  doors[0].h = 250.0f;
+        doors[1].pos = CP_Vector_Set(w * 0.7f, h * 0.8f);
+        doors[1].w = 30.0f;  doors[1].h = 250.0f;
+
+        buttons[0].pos = CP_Vector_Set(w * 0.25f, h * 0.2f);
+        buttons[1].pos = CP_Vector_Set(w * 0.25f, h * 0.8f);
+
+        powerups[0].pos = CP_Vector_Set(w * 0.25f, h * 0.5f);
+        powerups[1].pos = CP_Vector_Set(w * 0.55f, h * 0.7f);
         break;
 
-    case 11: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+	case 11: // door /button/powerup heavy level
+        enemyCount = 3;
+        wallCount = 4;
+        boxCount = 2;
+		doorCount = 1;
+		powerupCount = 3;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        targets[0].pos = CP_Vector_Set(w * 0.88f, h * 0.15f);
+        targets[1].pos = CP_Vector_Set(w * 0.88f, h * 0.85f);
+        targets[2].pos = CP_Vector_Set(w * 0.6f, h * 0.5f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].pos = CP_Vector_Set(w * 0.3f, h * 0.4f);
+        walls[0].w = 30.0f;  walls[0].h = 500.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.7f, h * 0.3f);
+        walls[1].w = 30.0f;  walls[1].h = 350.0f;
+        walls[2].pos = CP_Vector_Set(w * 0.7f, h * 0.75f);
+        walls[2].w = 30.0f;  walls[2].h = 300.0f;
+        walls[3].pos = CP_Vector_Set(w * 0.5f, h * 0.8f);
+        walls[3].w = 200.0f; walls[3].h = 30.0f;
+
+        doors[0].pos = CP_Vector_Set(w * 0.5f, h * 0.4f);
+        doors[0].w = 30.0f;  doors[0].h = 350.0f;
+        buttons[0].pos = CP_Vector_Set(w * 0.15f, h * 0.3f);
+
+        boxes[0].pos = CP_Vector_Set(w * 0.4f, h * 0.65f);
+        boxes[0].w = 80.0f;  boxes[0].h = 80.0f;
+        boxes[1].pos = CP_Vector_Set(w * 0.85f, h * 0.5f);
+        boxes[1].w = 80.0f;  boxes[1].h = 80.0f;
+
+        powerups[0].pos = CP_Vector_Set(w * 0.2f, h * 0.55f);
+        powerups[1].pos = CP_Vector_Set(w * 0.4f, h * 0.2f);
+        powerups[2].pos = CP_Vector_Set(w * 0.6f, h * 0.15f);
         break;
 
-    case 12: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+	case 12: //boss level: no normal enemies, just the boss and a few obstacles
+        enemyCount = 0;
+        wallCount = 3;
+        boxCount = 1;
+        doorCount = 1;
+        powerupCount = 2;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        walls[0].pos = CP_Vector_Set(w * 0.7f, h * 0.3f);
+        walls[0].w = 30.0f;  walls[0].h = 250.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.7f, h * 0.65f);
+        walls[1].w = 30.0f;  walls[1].h = 250.0f;
+        walls[2].pos = CP_Vector_Set(w * 0.5f, h * 0.3f);
+        walls[2].w = 30.0f;  walls[2].h = 300.0f;
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        boxes[0].pos = CP_Vector_Set(w * 0.3f, h * 0.7f);
+        boxes[0].w = 80.0f;  boxes[0].h = 80.0f;
+
+        doors[0].pos = CP_Vector_Set(w * 0.5f, h * 0.65f);
+        doors[0].w = 30.0f;  doors[0].h = 300.0f;
+        buttons[0].pos = CP_Vector_Set(w * 0.35f, h * 0.2f);
+
+        powerups[0].pos = CP_Vector_Set(w * 0.3f, h * 0.5f);
+        powerups[1].pos = CP_Vector_Set(w * 0.55f, h * 0.75f);
+
+        boss.active = 1;
+        boss.lives = BOSS_MAX_LIVES;
+        TeleportBoss(w * BOSS_START_MIN_X);
+        levelStartAmmo = BOSS_LEVEL_AMMO;
         break;
 
     case 13: //placeholder levels for testing
@@ -1143,7 +1247,7 @@ void Game_Init(void)
     markerImage = CP_Image_Load("Assets/marker.png");
     speedBtn2xImage = CP_Image_Load("Assets/2xspd.png");
     bossImage = CP_Image_Load("Assets/boss_enemy.png");
-    shrapnelImage = CP_Image_Load("Assets/shrapnel.png");
+    shrapnelImage = CP_Image_Load("Assets/marker.png");
     shootSound = CP_Sound_Load("Assets/pencil_shoot.mp3");
     enemyDamageSound = CP_Sound_Load("Assets/enemy_damage.mp3");
     enemyDeathSound = CP_Sound_Load("Assets/enemy_death.mp3");
