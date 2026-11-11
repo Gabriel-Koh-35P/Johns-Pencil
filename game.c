@@ -1391,15 +1391,14 @@ void Game_Update(void)
         {
             clearTimer += dt;
 
-            if (clearTimer >= 0.7f)
+            if (clearTimer >= 0.6f)
             {
                 Progress_UnlockLevel(Progress_GetCurrentLevel() + 1);
                 CP_Engine_SetNextGameState(Level_Complete_Init, Level_Complete_Update, Level_Complete_Exit);
                 return;
             }
         }
-
-        if (ammo <= 0 && !bullet.active && !ShrapnelFlying() && !aiming && !awaitingQuestion)
+        else if (ammo <= 0 && !bullet.active && !ShrapnelFlying() && !aiming && !awaitingQuestion)
         {
             CP_Engine_SetNextGameState(Level_Failed_Init, Level_Failed_Update, Level_Failed_Exit);
             return;

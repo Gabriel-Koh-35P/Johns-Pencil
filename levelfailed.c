@@ -25,6 +25,7 @@
 static CP_Image titleImage;
 static CP_Image retryBtnImage;
 static CP_Image selectBtnImage;
+static CP_Sound failedSound;
 
 static float centerX;
 static float titleY, retryY, selectY;
@@ -44,6 +45,9 @@ void Level_Failed_Init(void)
     titleImage = CP_Image_Load("Assets/out-of-ammo.png");
     retryBtnImage = CP_Image_Load("Assets/try-again.png");
     selectBtnImage = CP_Image_Load("Assets/level-select.png");
+    if (!failedSound)
+        failedSound = CP_Sound_Load("Assets/lvlfailed.mp3");
+    CP_Sound_Play(failedSound);
 
     CP_Settings_RectMode(CP_POSITION_CENTER);
 }
