@@ -28,19 +28,27 @@
 
 #define MAX_AMMO          3
 #define AMMO_CAP          5
-#define AMMO_ICON_W     160.0f
-#define AMMO_ICON_H     80.0f
+#define AMMO_ICON_W     90.0f
+#define AMMO_ICON_H     90.0f
 #define AMMO_ICON_STEP  30.0f
+#define PEN_EXTRA_GAP 15.0f   /* tweak to taste */
 
 
-#define MAX_ENEMIES  3
-#define MAX_WALLS    3
+#define MAX_ENEMIES  4
+#define MAX_WALLS    5
 #define MAX_BOXES    3
 #define MAX_DOORS    2
 #define MAX_POWERUPS 3
 
 #define POWERUP_BOX_DIAMETER 100.0f
 #define POWERUP_BOX_DRAW_SIZE 300.0f
+
+/* scattershot powerup: the box that was hit bursts into small shrapnel */
+#define SCATTER_COUNT       3                              /* shrapnel per burst */
+#define SHRAPNEL_MAX        (MAX_POWERUPS * SCATTER_COUNT) /* most that can exist at once */
+#define SHRAPNEL_DIAMETER   10.0f    /* collision, smaller than the bullet's */
+#define SHRAPNEL_DRAW_SIZE  60.0f    /* visual, smaller than the bullet's picture */
+#define SHRAPNEL_SPEED      BULLET_SPEED
 
 /* boss (level 6) */
 #define BOSS_MAX_LIVES        3
@@ -75,18 +83,28 @@
 static CP_Image playerImage;
 static CP_Image enemyImage;
 static CP_Image bossImage;
+static CP_Image shrapnelImage;
 static CP_Image powerupBoxImage;
 static CP_Image bulletImage;
 static CP_Image bulletPierceImage;
+static CP_Image bulletAmmoImage;
+static CP_Image bulletPierceAmmoImage;
+static CP_Image markerImage;
 static CP_Image speedBtn1xImage;
 static CP_Image speedBtn2xImage;
 
 static int   awaitingQuestion;   /* 1 while the MCQ popup is showing, pauses the game */
 static int   correctOption;      /* index 0-3 of the correct answer this question */
-static int   pendingPierce;      /* 1: the next fired bullet starts piercing */
+static int   pierceAmmo;        /* how many of our ammmo are pens*/
+static int   usePen;          /* 1: the next fired bullet is a pen, not a pencil */
 
 static float optionX[OPTION_COUNT];
 static float optionY;
+
+static CP_Sound shootSound;
+static CP_Sound enemyDeathSound;
+static CP_Sound enemyDamageSound;
+static CP_Sound powerupSound;
 
 typedef struct
 {
@@ -134,6 +152,15 @@ typedef struct
     int       active;   /* 1 only on the boss level */
 } Boss;
 
+typedef struct
+{
+    CP_Vector pos;
+    CP_Vector vel;
+    int       active;
+} Shrapnel;
+
+typedef enum { REWARD_RELOAD, REWARD_PIERCE, REWARD_SCATTER } Reward;
+
 static Target  targets[MAX_ENEMIES];
 static Rect    walls[MAX_WALLS];
 static Rect    boxes[MAX_BOXES];
@@ -141,6 +168,8 @@ static Door    doors[MAX_DOORS];
 static Button  buttons[MAX_DOORS];
 static Powerup powerups[MAX_POWERUPS];
 static Boss    boss;
+static Shrapnel  shrapnel[SHRAPNEL_MAX];
+static CP_Vector lastBoxPos;   /* where a powerup box was last hit: a scatter won from the question launches from here */
 
 static int enemyCount, wallCount, boxCount, doorCount, powerupCount;
 
@@ -151,6 +180,7 @@ static int       ammo;
 static int       levelStartAmmo;   /* bullets this level starts with */
 static int       seeded;           /* random generator seeded yet? */
 static int speedBoosted;   /* 1 = current bullet is at 2x speed */
+static float clearTimer;   /* time since the last enemy died, before showing the menu */
 
 /* ---------------------------------------------------------- */
 /* aiming */
@@ -182,22 +212,72 @@ static void AddAmmo(int n)
         ammo += n;
 }
 
-static void TriggerPowerupBox(void)
+/* random whole number from 0 to count-1 (written this way because the header
+   doesn't say whether CP_Random_RangeInt includes its upper bound) */
+static int RandomIndex(int count)
 {
-    unsigned int roll = CP_Random_RangeInt(1, 4);
+    int i = (int)CP_Random_RangeFloat(0.0f, (float)count);
 
-    if (roll == 1)
+    return (i >= count) ? count - 1 : i;
+}
+
+/* scattershot: SCATTER_COUNT shrapnel burst out of the box in random directions */
+static void LaunchShrapnel(CP_Vector from)
+{
+    int s, made = 0;
+
+    for (s = 0; s < SHRAPNEL_MAX && made < SCATTER_COUNT; s++)
     {
+        float angle;
+
+        if (shrapnel[s].active)
+            continue;
+
+        angle = CP_Random_RangeFloat(0.0f, 6.2831853f);   /* any direction at all */
+
+        shrapnel[s].pos = from;
+        shrapnel[s].vel = CP_Vector_Set(cosf(angle) * SHRAPNEL_SPEED, sinf(angle) * SHRAPNEL_SPEED);
+        shrapnel[s].active = 1;
+        made++;
+    }
+}
+
+/* every powerup reward goes through here, whether it came straight from the
+   box or from answering the question correctly */
+static void GrantReward(Reward reward, CP_Vector boxPos)
+{
+    switch (reward)
+    {
+    case REWARD_RELOAD:
         AddAmmo(2);
+        break;
+
+    case REWARD_PIERCE:
+        pierceAmmo += 1;     /* one more pen for the pen/pencil swap (E key) */
+        AddAmmo(1);          /* and the bullet that hit the box is refunded */
+        break;
+
+    case REWARD_SCATTER:
+        LaunchShrapnel(boxPos);
+        break;
     }
+}
+
+static void TriggerPowerupBox(CP_Vector boxPos)
+{
+    int roll = RandomIndex(6);
+
+    lastBoxPos = boxPos;
+
+    if (roll == 0)
+        GrantReward(REWARD_RELOAD, boxPos);
+    else if (roll == 1)
+        GrantReward(REWARD_PIERCE, boxPos);
     else if (roll == 2)
-    {
-        pendingPierce = 1;
-        ammo += 1;
-    }
+        GrantReward(REWARD_SCATTER, boxPos);
     else
     {
-        /* rolls 3 and 4 together: 2 in 4, i.e. 1/2 chance */
+        /* rolls 3, 4 and 5: 3 in 6, i.e. a 1/2 chance */
         awaitingQuestion = 1;
         correctOption = 0;   /* "What is A?" -> option A, index 0 */
     }
@@ -207,36 +287,79 @@ static void TriggerPowerupBox(void)
 /* collision: one shared rectangle-vs-bullet resolver, used for
    walls, boxes, and closed doors */
 
-static void ResolveRectCollision(CP_Vector rectPos, float w, float h)
+static void ResolveRectCollision(CP_Vector* pos, CP_Vector* vel, float r,
+    CP_Vector rectPos, float w, float h)
 {
-    float r = BULLET_DIAMETER / 2.0f;
-
     float left = rectPos.x - w / 2.0f - r;
     float right = rectPos.x + w / 2.0f + r;
     float top = rectPos.y - h / 2.0f - r;
     float bottom = rectPos.y + h / 2.0f + r;
 
-    if (bullet.pos.x < left || bullet.pos.x > right ||
-        bullet.pos.y < top || bullet.pos.y > bottom)
+    if (pos->x < left || pos->x > right ||
+        pos->y < top || pos->y > bottom)
         return;
 
-    float penLeft = bullet.pos.x - left;
-    float penRight = right - bullet.pos.x;
-    float penTop = bullet.pos.y - top;
-    float penBottom = bottom - bullet.pos.y;
+    float penLeft = pos->x - left;
+    float penRight = right - pos->x;
+    float penTop = pos->y - top;
+    float penBottom = bottom - pos->y;
 
     float minPenX = (penLeft < penRight) ? penLeft : penRight;
     float minPenY = (penTop < penBottom) ? penTop : penBottom;
 
     if (minPenX < minPenY)
     {
-        bullet.pos.x = (penLeft < penRight) ? left : right;
-        bullet.vel.x = -bullet.vel.x;
+        pos->x = (penLeft < penRight) ? left : right;
+        vel->x = -vel->x;
     }
     else
     {
-        bullet.pos.y = (penTop < penBottom) ? top : bottom;
-        bullet.vel.y = -bullet.vel.y;
+        pos->y = (penTop < penBottom) ? top : bottom;
+        vel->y = -vel->y;
+    }
+}
+
+/* Reflection for ANY projectile (the bullet and every piece of shrapnel use this,
+   so they all bounce in exactly the same way).
+   The window edges always bounce; walls, boxes and closed doors bounce unless
+   the projectile pierces. There is no bottom edge: falling off it is a miss. */
+static void BounceProjectile(CP_Vector* pos, CP_Vector* vel, float r, int piercing)
+{
+    float w = (float)CP_System_GetWindowWidth();
+    int   i;
+
+    if (pos->x - r < 0.0f) { pos->x = r;     vel->x = -vel->x; }
+    else if (pos->x + r > w) { pos->x = w - r; vel->x = -vel->x; }
+    if (pos->y - r < 0.0f) { pos->y = r;     vel->y = -vel->y; }
+
+    if (piercing)
+        return;
+
+    for (i = 0; i < wallCount; i++)
+        ResolveRectCollision(pos, vel, r, walls[i].pos, walls[i].w, walls[i].h);
+
+    for (i = 0; i < boxCount; i++)
+        ResolveRectCollision(pos, vel, r, boxes[i].pos, boxes[i].w, boxes[i].h);
+
+    for (i = 0; i < doorCount; i++)
+        if (!doors[i].open)
+            ResolveRectCollision(pos, vel, r, doors[i].pos, doors[i].w, doors[i].h);
+}
+
+/* a projectile touching a button presses it, which opens its door */
+static void PressButtons(CP_Vector pos, float r)
+{
+    int i;
+
+    for (i = 0; i < doorCount; i++)
+    {
+        if (!buttons[i].pressed &&
+            AreCirclesIntersecting(pos.x, pos.y, r,
+                buttons[i].pos.x, buttons[i].pos.y, BUTTON_DIAMETER / 2.0f))
+        {
+            buttons[i].pressed = 1;
+            doors[i].open = 1;
+        }
     }
 }
 
@@ -344,10 +467,23 @@ static void TeleportBoss(float minX)
     /* no free spot at all (only happens in very small windows): he stays put */
 }
 
+/* one hit costs the boss one life; if he survives, he teleports */
+static void HitBoss(void)
+{
+    boss.lives--;
+
+    if (boss.lives > 0)
+    {
+        CP_Sound_Play(enemyDamageSound);
+        TeleportBoss(0.0f);          /* anywhere free */
+    }
+    else
+        CP_Sound_Play(enemyDeathSound);
+}
+
 static void UpdateBullet(float dt)
 {
     float r = BULLET_DIAMETER / 2.0f;
-    float w = (float)CP_System_GetWindowWidth();
     int   i;
 
     if (!bullet.active)
@@ -356,36 +492,11 @@ static void UpdateBullet(float dt)
     bullet.pos.x += bullet.vel.x * dt;
     bullet.pos.y += bullet.vel.y * dt;
 
-    /* window edges always bounce, piercing or not */
-    if (bullet.pos.x - r < 0.0f) { bullet.pos.x = r;     bullet.vel.x = -bullet.vel.x; }
-    else if (bullet.pos.x + r > w) { bullet.pos.x = w - r; bullet.vel.x = -bullet.vel.x; }
-    if (bullet.pos.y - r < 0.0f) { bullet.pos.y = r;     bullet.vel.y = -bullet.vel.y; }
-
-    /* walls, boxes, closed doors: skipped entirely while piercing */
-    if (!bullet.piercing)
-    {
-        for (i = 0; i < wallCount; i++)
-            ResolveRectCollision(walls[i].pos, walls[i].w, walls[i].h);
-
-        for (i = 0; i < boxCount; i++)
-            ResolveRectCollision(boxes[i].pos, boxes[i].w, boxes[i].h);
-
-        for (i = 0; i < doorCount; i++)
-            if (!doors[i].open)
-                ResolveRectCollision(doors[i].pos, doors[i].w, doors[i].h);
-    }
+    /* window edges, walls, boxes and closed doors (the last three are skipped while piercing) */
+    BounceProjectile(&bullet.pos, &bullet.vel, r, bullet.piercing);
 
     /* buttons: always checked, piercing or not */
-    for (i = 0; i < doorCount; i++)
-    {
-        if (!buttons[i].pressed &&
-            AreCirclesIntersecting(bullet.pos.x, bullet.pos.y, r,
-                buttons[i].pos.x, buttons[i].pos.y, BUTTON_DIAMETER / 2.0f))
-        {
-            buttons[i].pressed = 1;
-            doors[i].open = 1;
-        }
-    }
+    PressButtons(bullet.pos, r);
 
     /* powerup boxes: always checked */
     for (i = 0; i < powerupCount; i++)
@@ -398,7 +509,7 @@ static void UpdateBullet(float dt)
         {
             powerups[i].active = 0;
             bullet.active = 0;   /* the box always consumes the bullet */
-            TriggerPowerupBox();
+            TriggerPowerupBox(powerups[i].pos);
         }
     }
 
@@ -415,6 +526,7 @@ static void UpdateBullet(float dt)
         {
             targets[i].hit = 1;
             bullet.active = 0;
+            CP_Sound_Play(enemyDeathSound);
         }
     }
 
@@ -424,11 +536,74 @@ static void UpdateBullet(float dt)
         AreCirclesIntersecting(bullet.pos.x, bullet.pos.y, r,
             boss.pos.x, boss.pos.y, BOSS_DIAMETER / 2.0f))
     {
-        boss.lives--;
         bullet.active = 0;
+        HitBoss();
+    }
+}
 
-        if (boss.lives > 0)
-            TeleportBoss(0.0f);          /* anywhere free */
+static int ShrapnelFlying(void)
+{
+    int s;
+
+    for (s = 0; s < SHRAPNEL_MAX; s++)
+        if (shrapnel[s].active)
+            return 1;
+
+    return 0;
+}
+
+/* shrapnel: bounces like the bullet, kills a normal enemy on contact,
+   and costs the boss one life per piece that hits him.
+   It passes straight through powerup boxes (no chain reactions). */
+static void UpdateShrapnel(float dt)
+{
+    float r = SHRAPNEL_DIAMETER / 2.0f;
+    int   s, i;
+
+    for (s = 0; s < SHRAPNEL_MAX; s++)
+    {
+        Shrapnel* p = &shrapnel[s];
+
+        if (!p->active)
+            continue;
+
+        p->pos.x += p->vel.x * dt;
+        p->pos.y += p->vel.y * dt;
+
+        BounceProjectile(&p->pos, &p->vel, r, 0);
+        PressButtons(p->pos, r);
+
+        /* missed: fell off the bottom */
+        if (p->pos.y - r > (float)CP_System_GetWindowHeight())
+        {
+            p->active = 0;
+            continue;
+        }
+
+        /* normal enemies: one hit and they are down */
+        for (i = 0; i < enemyCount; i++)
+        {
+            if (!targets[i].hit &&
+                AreCirclesIntersecting(p->pos.x, p->pos.y, r,
+                    targets[i].pos.x, targets[i].pos.y, TARGET_DIAMETER / 2.0f))
+            {
+                targets[i].hit = 1;
+                p->active = 0;
+                CP_Sound_Play(enemyDeathSound);
+                break;
+            }
+        }
+        if (!p->active)
+            continue;
+
+        /* boss: 1 life, same as a bullet */
+        if (boss.active && boss.lives > 0 &&
+            AreCirclesIntersecting(p->pos.x, p->pos.y, r,
+                boss.pos.x, boss.pos.y, BOSS_DIAMETER / 2.0f))
+        {
+            p->active = 0;
+            HitBoss();
+        }
     }
 }
 
@@ -540,14 +715,23 @@ static void DrawBoss(void)
 static void DrawAmmo(void)
 {
     int   i;
+    int   normalCount = ammo - pierceAmmo;
     float x = playerPos.x + 120.0f;
     float y = (float)CP_System_GetWindowHeight() - 60.0f;
 
     for (i = 0; i < ammo; i++)
     {
-        CP_Image img = (i == 0 && pendingPierce) ? bulletPierceImage : bulletImage;
+        /* icon 0 is the next shot: pens first if selected, else pencils first */
+        int isPen = usePen ? (i < pierceAmmo) : (i >= normalCount);
+        CP_Image img = isPen ? bulletPierceAmmoImage : bulletAmmoImage;
 
-        CP_Image_DrawAdvanced(img, x + i * AMMO_ICON_STEP, y,
+        float drawX = x + i * AMMO_ICON_STEP;
+
+        /* push pens further out: gap before the first pen of the group */
+        if (isPen)
+            drawX += PEN_EXTRA_GAP;
+
+        CP_Image_DrawAdvanced(img, drawX, y,
             AMMO_ICON_W, AMMO_ICON_H, 255, -90.0f);
     }
 }
@@ -590,11 +774,8 @@ static void DrawQuestionPopup(void)
             {
                 if (i == correctOption)
                 {
-                    if (CP_Random_GetBool())
-                        AddAmmo(2);
-                    else
-                        pendingPierce = 1;
-                    ammo += 1;
+                    CP_Sound_Play(powerupSound);
+                    GrantReward((Reward)RandomIndex(3), lastBoxPos);   /* reload, pierce or scatter */
                 }
                 /* wrong answer: nothing happens, matches "bullet already deleted" */
 
@@ -622,6 +803,21 @@ static float VelocityToDegrees(CP_Vector vel) // For flipping the projectiles
 {
     float radians = atan2f(vel.y, vel.x);
     return radians * (180.0f / 3.14159265f);
+}
+
+static void DrawShrapnel(void)
+{
+    int s;
+
+    for (s = 0; s < SHRAPNEL_MAX; s++)
+    {
+        if (!shrapnel[s].active)
+            continue;
+
+        /* turns to face where it is going, like the pencil (add 90.0f if your art points up) */
+        CP_Image_DrawAdvanced(shrapnelImage, shrapnel[s].pos.x, shrapnel[s].pos.y,
+            SHRAPNEL_DRAW_SIZE, SHRAPNEL_DRAW_SIZE, 255, VelocityToDegrees(shrapnel[s].vel));
+    }
 }
 
 /* ---------------------------------------------------------- */
@@ -754,7 +950,7 @@ static void SetupLevel(int level)
         break;
 
     case 6:
-      /* combines everything */
+        /* combines everything */
         enemyCount = 0;               /* no normal enemies: the boss is the only target */
         wallCount = 3;
         boxCount = 1;
@@ -797,86 +993,222 @@ static void SetupLevel(int level)
         levelStartAmmo = BOSS_LEVEL_AMMO;
         break;
 
-	case 7: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+    case 7: // two doors + two buttons
+        enemyCount = 2;
+        wallCount = 2;
+        doorCount = 2;
+		powerupCount = 1;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.2f);
+        targets[1].pos = CP_Vector_Set(w * 0.85f, h * 0.75f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].pos = CP_Vector_Set(w * 0.45f, h * 0.5f);
+        walls[0].w = 30.0f;  walls[0].h = 700.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.8f, h * 0.48f);
+        walls[1].w = 300.0f; walls[1].h = 30.0f;
+
+        doors[0].pos = CP_Vector_Set(w * 0.7f, h * 0.22f);
+        doors[0].w = 30.0f;  doors[0].h = 300.0f;
+        doors[1].pos = CP_Vector_Set(w * 0.7f, h * 0.75f);
+        doors[1].w = 30.0f;  doors[1].h = 300.0f;
+
+        buttons[0].pos = CP_Vector_Set(w * 0.25f, h * 0.15f);
+        buttons[1].pos = CP_Vector_Set(w * 0.25f, h * 0.45f);
+
+        powerups[0].pos = CP_Vector_Set(w * 0.3f, h * 0.3f);
         break;
 
-    case 8: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+	case 8: // boxes + 2 powerups + walls + enemies
+        enemyCount = 3;
+        wallCount = 3;
+        boxCount = 2;
+        powerupCount = 2;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.15f);
+        targets[1].pos = CP_Vector_Set(w * 0.85f, h * 0.5f);
+        targets[2].pos = CP_Vector_Set(w * 0.6f, h * 0.8f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].pos = CP_Vector_Set(w * 0.4f, h * 0.4f);
+        walls[0].w = 30.0f;  walls[0].h = 600.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.7f, h * 0.3f);
+        walls[1].w = 30.0f;  walls[1].h = 400.0f;
+        walls[2].pos = CP_Vector_Set(w * 0.75f, h * 0.65f);
+        walls[2].w = 250.0f; walls[2].h = 30.0f;
+
+        boxes[0].pos = CP_Vector_Set(w * 0.25f, h * 0.5f);
+        boxes[0].w = 80.0f;  boxes[0].h = 80.0f;
+        boxes[1].pos = CP_Vector_Set(w * 0.55f, h * 0.6f);
+        boxes[1].w = 80.0f;  boxes[1].h = 80.0f;
+
+        powerups[0].pos = CP_Vector_Set(w * 0.25f, h * 0.25f);
+        powerups[1].pos = CP_Vector_Set(w * 0.55f, h * 0.3f);
         break;
 
-    case 9: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+	case 9: // zigzag level
+        enemyCount = 2;
+        wallCount = 3;
+        boxCount = 2;
+        powerupCount = 1;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        targets[0].pos = CP_Vector_Set(w * 0.88f, h * 0.2f);
+        targets[1].pos = CP_Vector_Set(w * 0.88f, h * 0.75f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].pos = CP_Vector_Set(w * 0.4f, h * 0.7f);
+        walls[0].w = 30.0f;  walls[0].h = 300.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.55f, h * 0.25f);
+        walls[1].w = 30.0f;  walls[1].h = 300.0f;
+        walls[2].pos = CP_Vector_Set(w * 0.7f, h * 0.7f);
+        walls[2].w = 30.0f;  walls[2].h = 300.0f;
+
+        boxes[0].pos = CP_Vector_Set(w * 0.25f, h * 0.4f);
+        boxes[0].w = 80.0f;  boxes[0].h = 80.0f;
+        boxes[1].pos = CP_Vector_Set(w * 0.62f, h * 0.5f);
+        boxes[1].w = 80.0f;  boxes[1].h = 80.0f;
+
+        powerups[0].pos = CP_Vector_Set(w * 0.25f, h * 0.2f);
+
+        levelStartAmmo = 5;
         break;
 
     case 10: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+        enemyCount = 3;
+        wallCount = 3;
+        doorCount = 2;
+        powerupCount = 2;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.2f);
+        targets[1].pos = CP_Vector_Set(w * 0.85f, h * 0.8f);
+        targets[2].pos = CP_Vector_Set(w * 0.55f, h * 0.2f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].pos = CP_Vector_Set(w * 0.4f, h * 0.5f);
+        walls[0].w = 30.0f;  walls[0].h = 600.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.7f, h * 0.5f);
+        walls[1].w = 30.0f;  walls[1].h = 300.0f;
+        walls[2].pos = CP_Vector_Set(w * 0.55f, h * 0.35f);
+        walls[2].w = 200.0f; walls[2].h = 30.0f;
+
+        doors[0].pos = CP_Vector_Set(w * 0.7f, h * 0.2f);
+        doors[0].w = 30.0f;  doors[0].h = 250.0f;
+        doors[1].pos = CP_Vector_Set(w * 0.7f, h * 0.8f);
+        doors[1].w = 30.0f;  doors[1].h = 250.0f;
+
+        buttons[0].pos = CP_Vector_Set(w * 0.25f, h * 0.2f);
+        buttons[1].pos = CP_Vector_Set(w * 0.25f, h * 0.8f);
+
+        powerups[0].pos = CP_Vector_Set(w * 0.25f, h * 0.5f);
+        powerups[1].pos = CP_Vector_Set(w * 0.55f, h * 0.7f);
         break;
 
-    case 11: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+	case 11: // door /button/powerup heavy level
+        enemyCount = 3;
+        wallCount = 4;
+        boxCount = 2;
+		doorCount = 1;
+		powerupCount = 3;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        targets[0].pos = CP_Vector_Set(w * 0.88f, h * 0.15f);
+        targets[1].pos = CP_Vector_Set(w * 0.88f, h * 0.85f);
+        targets[2].pos = CP_Vector_Set(w * 0.6f, h * 0.5f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].pos = CP_Vector_Set(w * 0.3f, h * 0.4f);
+        walls[0].w = 30.0f;  walls[0].h = 500.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.7f, h * 0.3f);
+        walls[1].w = 30.0f;  walls[1].h = 350.0f;
+        walls[2].pos = CP_Vector_Set(w * 0.7f, h * 0.75f);
+        walls[2].w = 30.0f;  walls[2].h = 300.0f;
+        walls[3].pos = CP_Vector_Set(w * 0.5f, h * 0.8f);
+        walls[3].w = 200.0f; walls[3].h = 30.0f;
+
+        doors[0].pos = CP_Vector_Set(w * 0.5f, h * 0.4f);
+        doors[0].w = 30.0f;  doors[0].h = 350.0f;
+        buttons[0].pos = CP_Vector_Set(w * 0.15f, h * 0.3f);
+
+        boxes[0].pos = CP_Vector_Set(w * 0.4f, h * 0.65f);
+        boxes[0].w = 80.0f;  boxes[0].h = 80.0f;
+        boxes[1].pos = CP_Vector_Set(w * 0.85f, h * 0.5f);
+        boxes[1].w = 80.0f;  boxes[1].h = 80.0f;
+
+        powerups[0].pos = CP_Vector_Set(w * 0.2f, h * 0.55f);
+        powerups[1].pos = CP_Vector_Set(w * 0.4f, h * 0.2f);
+        powerups[2].pos = CP_Vector_Set(w * 0.6f, h * 0.15f);
         break;
 
-    case 12: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+	case 12: //boss level: no normal enemies, just the boss and a few obstacles
+        enemyCount = 0;
+        wallCount = 3;
+        boxCount = 1;
+        doorCount = 1;
+        powerupCount = 2;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        walls[0].pos = CP_Vector_Set(w * 0.7f, h * 0.3f);
+        walls[0].w = 30.0f;  walls[0].h = 250.0f;
+        walls[1].pos = CP_Vector_Set(w * 0.7f, h * 0.65f);
+        walls[1].w = 30.0f;  walls[1].h = 250.0f;
+        walls[2].pos = CP_Vector_Set(w * 0.5f, h * 0.3f);
+        walls[2].w = 30.0f;  walls[2].h = 300.0f;
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        boxes[0].pos = CP_Vector_Set(w * 0.3f, h * 0.7f);
+        boxes[0].w = 80.0f;  boxes[0].h = 80.0f;
+
+        doors[0].pos = CP_Vector_Set(w * 0.5f, h * 0.65f);
+        doors[0].w = 30.0f;  doors[0].h = 300.0f;
+        buttons[0].pos = CP_Vector_Set(w * 0.35f, h * 0.2f);
+
+        powerups[0].pos = CP_Vector_Set(w * 0.3f, h * 0.5f);
+        powerups[1].pos = CP_Vector_Set(w * 0.55f, h * 0.75f);
+
+        boss.active = 1;
+        boss.lives = BOSS_MAX_LIVES;
+        TeleportBoss(w * BOSS_START_MIN_X);
+        levelStartAmmo = BOSS_LEVEL_AMMO;
         break;
 
     case 13: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+        enemyCount = 3;
+        wallCount = 5;
+        doorCount = 2;
+        powerupCount = 2;
 
         targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+		targets[1].pos = CP_Vector_Set(w * 0.85f, h * 0.75f);
+		targets[2].pos = CP_Vector_Set(w * 0.65f, h * 0.50f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+        walls[0].pos = CP_Vector_Set(w * 0.80f, h * 0.35f);
         walls[0].w = 30.0f;
         walls[0].h = 500.0f;
+		walls[1].pos = CP_Vector_Set(w * 0.9f, h * 0.35f);
+		walls[1].w = 30.0f;
+		walls[1].h = 500.0f;
+        walls[2].pos = CP_Vector_Set(w * 0.8f, h * 0.75f);
+        walls[2].w = 30.0f;
+        walls[2].h = 200.0f;
+		walls[3].pos = CP_Vector_Set(w * 0.5f, h * 0.25f);
+		walls[3].w = 30.0f;
+		walls[3].h = 200.0f;
+		walls[4].pos = CP_Vector_Set(w * 0.15f, h * 0.95f);
+		walls[4].w = 500.0f;
+		walls[4].h = 30.0f;
+
+		doors[0].pos = CP_Vector_Set(w * 0.85f, h * 0.65f);
+		doors[0].w = 200.0f;
+		doors[0].h = 30.0f;
+        buttons[0].pos = CP_Vector_Set(w * 0.25f, h * 0.75f);
+
+		doors[1].pos = CP_Vector_Set(w * 0.5f, h * 0.75f);
+		doors[1].w = 30.0f;
+		doors[1].h = 500.0f;
+        buttons[1].pos = CP_Vector_Set(w * 0.15f, h * 0.25f);
+
+		powerups[0].pos = CP_Vector_Set(w * 0.3f, h * 0.3f);
+		powerups[1].pos = CP_Vector_Set(w * 0.65f, h * 0.75f);
+
         break;
 
     case 14: //placeholder levels for testing
         enemyCount = 1;
-        wallCount = 1;
+        wallCount = 3;
+        boxCount = 1;
+        doorCount =1;
 
         targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
 
@@ -919,7 +1251,7 @@ static void SetupLevel(int level)
         break;
 
     case 18: //placeholder levels for testing
-        default: 
+    default:
         enemyCount = 1;
         wallCount = 1;
 
@@ -947,8 +1279,17 @@ void Game_Init(void)
     bulletImage = CP_Image_Load("Assets/pencil_projectile.png");
     bulletPierceImage = CP_Image_Load("Assets/pen_pierce_projectile.png");
     speedBtn1xImage = CP_Image_Load("Assets/1xspd.png");
+    bulletAmmoImage = CP_Image_Load("Assets/pencil_ammo.png");
+    bulletPierceAmmoImage = CP_Image_Load("Assets/pen_ammo.png");
+    markerImage = CP_Image_Load("Assets/marker.png");
     speedBtn2xImage = CP_Image_Load("Assets/2xspd.png");
     bossImage = CP_Image_Load("Assets/boss_enemy.png");
+    shrapnelImage = CP_Image_Load("Assets/marker.png");
+    shootSound = CP_Sound_Load("Assets/pencil_shoot.mp3");
+    enemyDamageSound = CP_Sound_Load("Assets/enemy_damage.mp3");
+    enemyDeathSound = CP_Sound_Load("Assets/enemy_death.mp3");
+    powerupSound = CP_Sound_Load("Assets/powerup_get.mp3");
+
 
     Progress_LoadBackground();
 
@@ -968,7 +1309,11 @@ void Game_Init(void)
     aiming = 0;
     ammo = levelStartAmmo;
     awaitingQuestion = 0;
-    pendingPierce = 0;
+    clearTimer = 0.0f;
+    pierceAmmo = 0;
+    usePen = 0;
+    for (i = 0; i < SHRAPNEL_MAX; i++)
+        shrapnel[i].active = 0;
 
     {
         float totalWidth = OPTION_COUNT * OPTION_BTN_W + (OPTION_COUNT - 1) * OPTION_GAP;
@@ -978,6 +1323,7 @@ void Game_Init(void)
             optionX[i] = startX + i * (OPTION_BTN_W + OPTION_GAP);
         optionY = h * 0.55f;
     }
+
 }
 
 void Game_Update(void)
@@ -992,7 +1338,11 @@ void Game_Update(void)
 
     if (!awaitingQuestion)
     {
-        if (!bullet.active)
+        /* swap between pen and normal pencil */
+        if (CP_Input_KeyTriggered(KEY_E) && pierceAmmo > 0)
+            usePen = !usePen;
+
+        if (!bullet.active && !ShrapnelFlying())    /* one volley at a time */
         {
             if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
             {
@@ -1007,10 +1357,21 @@ void Game_Update(void)
                 bullet.vel = CP_Vector_Set(dir.x * BULLET_SPEED, dir.y * BULLET_SPEED);
                 bullet.active = 1;
                 speedBoosted = 0;   /* new bullet always starts at 1x */
-                bullet.piercing = pendingPierce;
-                pendingPierce = 0;
+
+                /* if every remaining shot is a pen, force the pen */
+                if (ammo <= pierceAmmo)
+                    usePen = 1;
+
+                bullet.piercing = usePen;
+                if (usePen)
+                {
+                    pierceAmmo--;
+                    if (pierceAmmo <= 0)
+                        usePen = 0;
+                }
                 aiming = 0;
                 ammo--;
+                CP_Sound_Play(shootSound);
             }
         }
 
@@ -1024,15 +1385,21 @@ void Game_Update(void)
         }
 
         UpdateBullet(dt);
+        UpdateShrapnel(dt);
 
         if (AllTargetsHit())
         {
-            Progress_UnlockLevel(Progress_GetCurrentLevel() + 1);
-            CP_Engine_SetNextGameState(Level_Complete_Init, Level_Complete_Update, Level_Complete_Exit);
-            return;
+            clearTimer += dt;
+
+            if (clearTimer >= 0.7f)
+            {
+                Progress_UnlockLevel(Progress_GetCurrentLevel() + 1);
+                CP_Engine_SetNextGameState(Level_Complete_Init, Level_Complete_Update, Level_Complete_Exit);
+                return;
+            }
         }
 
-        if (ammo <= 0 && !bullet.active && !aiming && !awaitingQuestion)
+        if (ammo <= 0 && !bullet.active && !ShrapnelFlying() && !aiming && !awaitingQuestion)
         {
             CP_Engine_SetNextGameState(Level_Failed_Init, Level_Failed_Update, Level_Failed_Exit);
             return;
@@ -1055,6 +1422,7 @@ void Game_Update(void)
 
     CP_Image_Draw(playerImage, playerPos.x, playerPos.y, PLAYER_DIAMETER, PLAYER_DIAMETER, 255);
 
+
     if (bullet.active)
     {
         float degrees = VelocityToDegrees(bullet.vel);   /* + 90.0f if your pencil points up by default */
@@ -1074,6 +1442,7 @@ void Game_Update(void)
         CP_Image_Draw(speedBoosted ? speedBtn2xImage : speedBtn1xImage,
             140.0f, 60.0f, 440.0f, 160.0f, 255);
     }
+    DrawShrapnel();
     DrawAmmo();
 
 
@@ -1084,4 +1453,8 @@ void Game_Update(void)
 
 void Game_Exit(void)
 {
+    CP_Sound_Free(shootSound);
+    CP_Sound_Free(enemyDamageSound);
+    CP_Sound_Free(enemyDeathSound);
+    CP_Sound_Free(powerupSound);
 }
