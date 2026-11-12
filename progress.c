@@ -16,7 +16,8 @@
 static int unlocked[LEVEL_COUNT];
 static int currentLevel;
 static int initialized;
-static CP_Image sharedBackground;
+static CP_Image stage1Background;
+static CP_Image stage2Background;
 static int       backgroundLoaded;
 
 void Progress_LoadBackground(void)
@@ -24,14 +25,22 @@ void Progress_LoadBackground(void)
     if (backgroundLoaded)
         return;
 
-    //sharedBackground = CP_Image_Load("Assets/neon_bg.png");
-    sharedBackground = CP_Image_Load("Assets/background_main_menu_stage_1.png"); 
+    stage1Background = CP_Image_Load("Assets/background_main_menu_stage_1.png");
+    stage2Background = CP_Image_Load("Assets/background_stage_2.png");   
     backgroundLoaded = 1;
 }
 
 CP_Image Progress_GetBackground(void)
 {
-    return sharedBackground;
+    if (currentLevel >= 13 && currentLevel <= 18) {
+        return stage1Background;
+    }
+    else if (currentLevel >= 7 && currentLevel <= 12) {
+        return stage2Background;
+    }
+    else {
+        return stage1Background;
+    }
 }
 
 static void DrawBackground(void)

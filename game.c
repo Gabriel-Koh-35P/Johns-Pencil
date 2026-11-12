@@ -246,6 +246,7 @@ static void LaunchShrapnel(CP_Vector from)
    box or from answering the question correctly */
 static void GrantReward(Reward reward, CP_Vector boxPos)
 {
+    CP_Sound_Play(powerupSound);
     switch (reward)
     {
     case REWARD_RELOAD:
@@ -774,7 +775,7 @@ static void DrawQuestionPopup(void)
             {
                 if (i == correctOption)
                 {
-                    CP_Sound_Play(powerupSound);
+                    
                     GrantReward((Reward)RandomIndex(3), lastBoxPos);   /* reload, pierce or scatter */
                 }
                 /* wrong answer: nothing happens, matches "bullet already deleted" */
