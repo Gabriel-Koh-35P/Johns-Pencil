@@ -50,7 +50,7 @@ void Main_Menu_Update(void)
     float h = (float)CP_System_GetWindowHeight();
 
     CP_Image_Draw(Progress_GetBackground(), w / 2.0f, h / 2.0f, w, h, 255);
-    CP_Image_Draw(titleImage, centerX, playY - 220.0f, 600.0f, 103.0f, 255);
+    CP_Image_Draw(titleImage, centerX, playY - 220.0f, 800.0f, 200.0f, 255);
     CP_Image_Draw(playBtnImage, centerX, playY, PLAY_BTN_W, PLAY_BTN_H, 255);
     CP_Image_Draw(exitBtnImage, centerX, exitY, EXIT_BTN_W, EXIT_BTN_H, 255);
 
