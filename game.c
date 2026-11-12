@@ -1240,15 +1240,46 @@ static void SetupLevel(int level)
 
         break;
 
-    case 15: //placeholder levels for testing
-        enemyCount = 1;
-        wallCount = 1;
+    case 15:  
+        enemyCount = 4;
+        wallCount = 7;
+        doorCount = 1;
+        powerupCount = 3;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+        targets[0].pos = CP_Vector_Set(w * 0.50f, h * 0.28f);
+        targets[1].pos = CP_Vector_Set(w * 0.80f, h * 0.32f);  
+        targets[2].pos = CP_Vector_Set(w * 0.50f, h * 0.74f);  
+        targets[3].pos = CP_Vector_Set(w * 0.77f, h * 0.74f);   
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
-        walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].pos = CP_Vector_Set(w * 0.40f, h * 0.35f);
+        walls[0].w = 30.0f;      walls[0].h = h * 0.30f;
+
+        walls[1].pos = CP_Vector_Set(w * 0.40f, h * 0.92f);
+        walls[1].w = 30.0f;      walls[1].h = h * 0.16f;
+
+        walls[2].pos = CP_Vector_Set(w * 0.90f, h * 0.46f);
+        walls[2].w = 30.0f;      walls[2].h = h * 0.92f;
+
+        walls[3].pos = CP_Vector_Set(w * 0.435f, h * 0.50f);
+        walls[3].w = w * 0.07f;  walls[3].h = 30.0f;
+
+        walls[4].pos = CP_Vector_Set(w * 0.7575f, h * 0.50f);
+        walls[4].w = w * 0.285f; walls[4].h = 30.0f;
+
+        walls[5].pos = CP_Vector_Set(w * 0.62f, h * 0.07f);
+        walls[5].w = 30.0f;      walls[5].h = h * 0.14f;
+
+        walls[6].pos = CP_Vector_Set(w * 0.65f, h * 0.92f);
+        walls[6].w = w * 0.50f;  walls[6].h = 30.0f;
+
+        doors[0].pos = CP_Vector_Set(w * 0.62f, h * 0.71f);
+        doors[0].w = 30.0f;      doors[0].h = h * 0.42f;
+
+        buttons[0].pos = CP_Vector_Set(w * 0.62f, h * 0.40f);
+
+        powerups[0].pos = CP_Vector_Set(w * 0.28f, h * 0.55f);
+        powerups[1].pos = CP_Vector_Set(w * 0.14f, h * 0.25f);
+        powerups[2].pos = CP_Vector_Set(w * 0.30f, h * 0.10f);
         break;
 
     case 16: //placeholder levels for testing
