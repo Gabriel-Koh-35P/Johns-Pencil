@@ -180,6 +180,7 @@ static int       ammo;
 static int       levelStartAmmo;   /* bullets this level starts with */
 static int       seeded;           /* random generator seeded yet? */
 static int speedBoosted;   /* 1 = current bullet is at 2x speed */
+static float clearTimer;   /* time since the last enemy died, before showing the menu */
 
 /* ---------------------------------------------------------- */
 /* aiming */
@@ -470,10 +471,14 @@ static void TeleportBoss(float minX)
 static void HitBoss(void)
 {
     boss.lives--;
-    CP_Sound_Play(enemyDamageSound);
 
     if (boss.lives > 0)
+    {
+        CP_Sound_Play(enemyDamageSound);
         TeleportBoss(0.0f);          /* anywhere free */
+    }
+    else
+        CP_Sound_Play(enemyDeathSound);
 }
 
 static void UpdateBullet(float dt)
@@ -1327,6 +1332,7 @@ void Game_Init(void)
     aiming = 0;
     ammo = levelStartAmmo;
     awaitingQuestion = 0;
+    clearTimer = 0.0f;
     pierceAmmo = 0;
     usePen = 0;
     for (i = 0; i < SHRAPNEL_MAX; i++)
@@ -1406,12 +1412,16 @@ void Game_Update(void)
 
         if (AllTargetsHit())
         {
-            Progress_UnlockLevel(Progress_GetCurrentLevel() + 1);
-            CP_Engine_SetNextGameState(Level_Complete_Init, Level_Complete_Update, Level_Complete_Exit);
-            return;
-        }
+            clearTimer += dt;
 
-        if (ammo <= 0 && !bullet.active && !ShrapnelFlying() && !aiming && !awaitingQuestion)
+            if (clearTimer >= 0.6f)
+            {
+                Progress_UnlockLevel(Progress_GetCurrentLevel() + 1);
+                CP_Engine_SetNextGameState(Level_Complete_Init, Level_Complete_Update, Level_Complete_Exit);
+                return;
+            }
+        }
+        else if (ammo <= 0 && !bullet.active && !ShrapnelFlying() && !aiming && !awaitingQuestion)
         {
             CP_Engine_SetNextGameState(Level_Failed_Init, Level_Failed_Update, Level_Failed_Exit);
             return;

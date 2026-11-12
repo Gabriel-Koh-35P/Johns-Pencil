@@ -32,6 +32,7 @@ static CP_Image bannerImage;
 static CP_Image menuBtnImage;
 static CP_Image nextBtnImage;
 static CP_Image nextPageBtnImage;   /* CHANGE */
+static CP_Sound passedSound;            
 
 static float centerX;
 static float titleY, nextY, menuY;
@@ -64,6 +65,9 @@ void Level_Complete_Init(void)
     menuBtnImage = CP_Image_Load("Assets/main-menu.png");
     nextBtnImage = CP_Image_Load("Assets/next-level.png");
     nextPageBtnImage = CP_Image_Load("Assets/continue.png");   /* placeholder, swap for real art */
+    if (!passedSound)
+        passedSound = CP_Sound_Load("Assets/lvlpassed.mp3");
+    CP_Sound_Play(passedSound);
 
     CP_Settings_RectMode(CP_POSITION_CENTER);
 }
