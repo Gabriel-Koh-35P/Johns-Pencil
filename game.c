@@ -38,7 +38,7 @@
 #define MAX_WALLS    5
 #define MAX_BOXES    3
 #define MAX_DOORS    2
-#define MAX_POWERUPS 3
+#define MAX_POWERUPS 4  
 
 #define POWERUP_BOX_DIAMETER 100.0f
 #define POWERUP_BOX_DRAW_SIZE 300.0f
@@ -52,8 +52,8 @@
 
 /* boss (level 6) */
 #define BOSS_MAX_LIVES        3
-#define BOSS_DIAMETER         200.0f   /* collision */
-#define BOSS_DRAW_SIZE        270.0f   /* visual, bigger than the hitbox like TARGET_DRAW_SIZE */
+#define BOSS_DIAMETER         150.0f   /* collision */
+#define BOSS_DRAW_SIZE        220.0f   /* visual, bigger than the hitbox like TARGET_DRAW_SIZE */
 #define BOSS_LEVEL_AMMO       5        /* the boss takes 3 hits, so 5 bullets leaves 2 spare for misses, no powerups needed */
 
 /* where the boss is allowed to land when he teleports */
@@ -79,6 +79,12 @@
 #define OPTION_BTN_W 140.0f
 #define OPTION_BTN_H 80.0f
 #define OPTION_GAP   30.0f
+
+#define BOSS_MOVE_SPEED  250.0f   /* pixels per second, up and down */
+
+static int   bossMoving;          /* 1 = boss slides up/down instead of teleporting */
+static float bossMinY, bossMaxY;
+static float bossMoveDir;         /* +1 = down, -1 = up */
 
 static CP_Image playerImage;
 static CP_Image enemyImage;
@@ -476,10 +482,29 @@ static void HitBoss(void)
     if (boss.lives > 0)
     {
         CP_Sound_Play(enemyDamageSound);
+        if (!bossMoving)
         TeleportBoss(0.0f);          /* anywhere free */
     }
     else
         CP_Sound_Play(enemyDeathSound);
+}
+
+static void UpdateBoss(float dt)
+{
+    float h = (float)CP_System_GetWindowHeight();
+    float r = BOSS_DIAMETER / 2.0f;
+    float top = BOSS_MARGIN_TOP + r;
+    float bottom = h - BOSS_MARGIN_BOTTOM - r;
+
+    if (!boss.active || boss.lives <= 0 || !bossMoving)
+        return;
+
+    boss.pos.y += bossMoveDir * BOSS_MOVE_SPEED * dt;
+
+    if (boss.pos.y < bossMinY) 
+    { boss.pos.y = bossMinY; bossMoveDir = 1.0f; }
+    else if (boss.pos.y > bossMaxY) 
+    { boss.pos.y = bossMaxY; bossMoveDir = -1.0f; }
 }
 
 static void UpdateBullet(float dt)
@@ -705,7 +730,7 @@ static void DrawBoss(void)
     for (i = 0; i < BOSS_MAX_LIVES; i++)
     {
         float px = boss.pos.x + (i - (BOSS_MAX_LIVES - 1) / 2.0f) * BOSS_PIP_STEP;
-        float py = boss.pos.y - BOSS_DIAMETER / 2.0f - 20.0f;
+        float py = boss.pos.y - BOSS_DIAMETER / 2.0f - 50.0f;
 
         CP_Settings_Fill(i < boss.lives ? CP_Color_Create(255, 60, 60, 255)
             : CP_Color_Create(60, 60, 60, 255));
@@ -837,6 +862,8 @@ static void SetupLevel(int level)
     boss.active = 0;
     boss.lives = 0;
     boss.pos = CP_Vector_Set(0.0f, 0.0f);
+    bossMoving = 0;
+    bossMoveDir = 1.0f;
 
     doorCount = 0;
     boxCount = 0;
@@ -1305,17 +1332,58 @@ static void SetupLevel(int level)
         walls[0].h = 500.0f;
         break;
 
-    case 18: //placeholder levels for testing
-    default:
-        enemyCount = 1;
-        wallCount = 1;
+    
+    case 18:   /* moving boss behind a full-height door */
+        enemyCount = 2;
+        wallCount = 3;
+        doorCount = 2;
+        powerupCount = 4;
 
-        targets[0].pos = CP_Vector_Set(w * 0.85f, h * 0.3f);
+      
+        targets[0].pos = CP_Vector_Set(w * 0.599f, h * 0.327f);
+        targets[1].pos = CP_Vector_Set(w * 0.646f, h * 0.796f);
 
-        walls[0].pos = CP_Vector_Set(w * 0.5f, h * 0.35f);
+       
+        walls[0].pos = CP_Vector_Set(w * 0.226f, h * 0.387f);   
         walls[0].w = 30.0f;
-        walls[0].h = 500.0f;
+        walls[0].h = h * 0.65f;
+
+        walls[1].pos = CP_Vector_Set(w * 0.334f, h * 0.215f);   
+        walls[1].w = 30.0f;
+        walls[1].h = h * 0.430f;
+
+        walls[2].pos = CP_Vector_Set(w * 0.638f, h * 0.445f);   
+        walls[2].w = w * 0.230f;
+        walls[2].h = 30.0f;
+
+        // buttons0 opens door0 
+        doors[0].pos = CP_Vector_Set(w * 0.40f, h * 0.785f);    
+        doors[0].w = 30.0f;
+        doors[0].h = h * 0.425f;
+        buttons[0].pos = CP_Vector_Set(w * 0.645f, h * 0.320f); 
+        // buttons1 opens door1 
+        doors[1].pos = CP_Vector_Set(w * 0.75f, h * 0.5f);      
+        doors[1].w = 30.0f;
+        doors[1].h = h;
+        buttons[1].pos = CP_Vector_Set(w * 0.690f, h * 0.795f); 
+
+       
+        powerups[0].pos = CP_Vector_Set(w * 0.100f, h * 0.395f);
+        powerups[1].pos = CP_Vector_Set(w * 0.280f, h * 0.215f);
+        powerups[2].pos = CP_Vector_Set(w * 0.505f, h * 0.090f);
+        powerups[3].pos = CP_Vector_Set(w * 0.54f, h * 0.59f);
+
+        
+        boss.active = 1;
+        boss.lives = BOSS_MAX_LIVES;
+        boss.pos = CP_Vector_Set(w * 0.88f, h * 0.535f);
+        bossMoving = 1;
+        bossMoveDir = 1.0f;
+        bossMinY = h * 0.17f;
+        bossMaxY = h * 0.87f;
+        levelStartAmmo = 5;   
         break;
+    
     }
 }
 
@@ -1441,6 +1509,7 @@ void Game_Update(void)
 
         UpdateBullet(dt);
         UpdateShrapnel(dt);
+        UpdateBoss(dt);
 
         if (AllTargetsHit())
         {
