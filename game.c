@@ -17,6 +17,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <time.h>
+#include "questions.h"
 
 #define PLAYER_DIAMETER  150.0f
 #define BULLET_DIAMETER  16.0f
@@ -76,9 +77,10 @@
 #define UI_SPEED_H 160.0f
 
 #define OPTION_COUNT 4
-#define OPTION_BTN_W 140.0f
+#define OPTION_BTN_W 900.0f
 #define OPTION_BTN_H 80.0f
-#define OPTION_GAP   30.0f
+#define OPTION_GAP   20.0f
+#define QUESTION_BOX_W 1000.0f
 
 #define BOSS_MOVE_SPEED  250.0f   /* pixels per second, up and down */
 
@@ -105,7 +107,11 @@ static int   pierceAmmo;        /* how many of our ammmo are pens*/
 static int   usePen;          /* 1: the next fired bullet is a pen, not a pencil */
 
 static float optionX[OPTION_COUNT];
-static float optionY;
+static float optionY[OPTION_COUNT];
+
+static int questionsLoaded;
+static const Question* currentQuestion;      /* NULL = questions.json missing/empty, falls back to "What is A?" */
+static int             optionOrder[OPTION_COUNT];   /* screen slot -> index into currentQuestion->options (shuffled) */
 
 static CP_Sound shootSound;
 static CP_Sound enemyDeathSound;
@@ -269,6 +275,35 @@ static void GrantReward(Reward reward, CP_Vector boxPos)
         break;
     }
 }
+/* picks a question and shuffles its options so the answer isn't always in the same slot */
+
+static void AskQuestion(void){
+    int i;
+    
+        awaitingQuestion = 1;
+    currentQuestion = Questions_Pick();
+    
+        for (i = 0; i < OPTION_COUNT; i++)
+        optionOrder[i] = i;
+    
+        if (!currentQuestion)
+         {
+        correctOption = 0;   /* fallback: "What is A?" -> option A */
+        return;
+        }
+    
+        for (i = OPTION_COUNT - 1; i > 0; i--)   /* Fisher-Yates */
+         {
+        int j = RandomIndex(i + 1);
+        int t = optionOrder[i];
+        optionOrder[i] = optionOrder[j];
+        optionOrder[j] = t;
+        }
+    
+        for (i = 0; i < OPTION_COUNT; i++)
+         if (optionOrder[i] == currentQuestion->answer)
+         correctOption = i;
+    }
 
 static void TriggerPowerupBox(CP_Vector boxPos)
 {
@@ -285,8 +320,7 @@ static void TriggerPowerupBox(CP_Vector boxPos)
     else
     {
         /* rolls 3, 4 and 5: 3 in 6, i.e. a 1/2 chance */
-        awaitingQuestion = 1;
-        correctOption = 0;   /* "What is A?" -> option A, index 0 */
+        AskQuestion();
     }
 }
 
@@ -765,8 +799,9 @@ static void DrawAmmo(void)
 static void DrawQuestionPopup(void)
 {
     const char* labels[OPTION_COUNT] = { "A", "B", "C", "D" };
+    char  line[OPTION_TEXT_LEN + 8];
     float centerX = (float)CP_System_GetWindowWidth() * 0.5f;
-    float titleY = (float)CP_System_GetWindowHeight() * 0.3f;
+    float titleY = (float)CP_System_GetWindowHeight() * 0.18f;
     int   i;
 
     /* dim overlay over the frozen game scene */
@@ -777,16 +812,33 @@ static void DrawQuestionPopup(void)
 
     CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
     CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
-    CP_Font_DrawText("What is A?", centerX, titleY);
+    CP_Settings_TextSize(40.0f);
+    if (currentQuestion)
+    {
+        CP_Font_DrawTextBox(currentQuestion->text, centerX - QUESTION_BOX_W / 2.0f, titleY, QUESTION_BOX_W);
+    }
+    else
+    {
+        char dbg[64];
+        snprintf(dbg, sizeof dbg, "What is A?  (loaded: %d)", questionsLoaded);
+        CP_Font_DrawText(dbg, centerX, titleY);
+    }
 
     for (i = 0; i < OPTION_COUNT; i++)
     {
         CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
         CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
-        CP_Graphics_DrawRect(optionX[i], optionY, OPTION_BTN_W, OPTION_BTN_H);
+        CP_Graphics_DrawRect(optionX[i], optionY[i], OPTION_BTN_W, OPTION_BTN_H);
 
         CP_Settings_Fill(CP_Color_Create(0, 0, 0, 255));
-        CP_Font_DrawText(labels[i], optionX[i], optionY);
+        CP_Settings_TextSize(30.0f);
+        if (currentQuestion)    
+        {
+            snprintf(line, sizeof line, "%s. %s", labels[i], currentQuestion->options[optionOrder[i]]);
+            CP_Font_DrawText(line, optionX[i], optionY[i]);
+        }
+        else
+            CP_Font_DrawText(labels[i], optionX[i], optionY[i]);
     }
 
     if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
@@ -796,11 +848,10 @@ static void DrawQuestionPopup(void)
 
         for (i = 0; i < OPTION_COUNT; i++)
         {
-            if (IsAreaClicked(optionX[i], optionY, OPTION_BTN_W, OPTION_BTN_H, mx, my))
+            if (IsAreaClicked(optionX[i], optionY[i], OPTION_BTN_W, OPTION_BTN_H, mx, my))
             {
                 if (i == correctOption)
                 {
-                    
                     GrantReward((Reward)RandomIndex(3), lastBoxPos);   /* reload, pierce or scatter */
                 }
                 /* wrong answer: nothing happens, matches "bullet already deleted" */
@@ -811,6 +862,7 @@ static void DrawQuestionPopup(void)
         }
     }
 }
+
 
 static int AllTargetsHit(void)
 {
@@ -1466,6 +1518,9 @@ void Game_Init(void)
 
     Progress_LoadBackground();
 
+    questionsLoaded = Questions_Load("Assets/questions.json");
+    currentQuestion = NULL;
+
     if (!seeded)
     {
         CP_Random_Seed((int)time(NULL));   /* different random rolls every launch */
@@ -1488,14 +1543,16 @@ void Game_Init(void)
     for (i = 0; i < SHRAPNEL_MAX; i++)
         shrapnel[i].active = 0;
 
-    {
-        float totalWidth = OPTION_COUNT * OPTION_BTN_W + (OPTION_COUNT - 1) * OPTION_GAP;
-        float startX = (w - totalWidth) / 2.0f + OPTION_BTN_W / 2.0f;
+        {
+            float startY = h * 0.42f;
 
-        for (i = 0; i < OPTION_COUNT; i++)
-            optionX[i] = startX + i * (OPTION_BTN_W + OPTION_GAP);
-        optionY = h * 0.55f;
-    }
+            for (i = 0; i < OPTION_COUNT; i++)
+            {
+                optionX[i] = w * 0.5f;
+                optionY[i] = startY + i * (OPTION_BTN_H + OPTION_GAP);
+            }
+        }
+  
 
 }
 
@@ -1623,6 +1680,7 @@ void Game_Update(void)
     if (awaitingQuestion)
         DrawQuestionPopup();
 }
+
 
 void Game_Exit(void)
 {

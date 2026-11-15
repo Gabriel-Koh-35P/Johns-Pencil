@@ -39,6 +39,9 @@
     <ClCompile Include="levelfailed.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="questions.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.h">
@@ -62,5 +65,13 @@
     <ClInclude Include="levelfailed.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="questions.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="questions.json">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
