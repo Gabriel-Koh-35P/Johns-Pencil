@@ -862,6 +862,15 @@ static void DrawQuestionPopup(void)
             }
         }
     }
+
+    /* CHEAT: press C to skip the question and get the reward as if answered correctly */
+    if (CP_Input_KeyTriggered(KEY_C))
+    {
+        CP_Sound_Play(powerupSound);
+        GrantReward((Reward)RandomIndex(3), lastBoxPos);   /* reload, pierce or scatter */
+        awaitingQuestion = 0;
+        return;
+    }
 }
 
 
