@@ -231,6 +231,7 @@ static int RandomIndex(int count)
 static void LaunchShrapnel(CP_Vector from)
 {
     int s, made = 0;
+    speedBoosted = 0;
 
     for (s = 0; s < SHRAPNEL_MAX && made < SCATTER_COUNT; s++)
     {
@@ -1548,12 +1549,22 @@ void Game_Update(void)
             }
         }
 
-        if (bullet.active && CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT) &&
+        if ((bullet.active || ShrapnelFlying()) && CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT) &&
             IsAreaClicked(140.0f, 60.0f, 440.0f, 160.0f, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
         {
             float factor = speedBoosted ? 0.5f : 2.0f;
+            int s;
             bullet.vel.x *= factor;
             bullet.vel.y *= factor;
+
+            for (s = 0; s < SHRAPNEL_MAX; s++)
+            {
+                if (shrapnel[s].active)
+                {
+                    shrapnel[s].vel.x *= factor;
+                    shrapnel[s].vel.y *= factor;
+                }
+            }
             speedBoosted = !speedBoosted;
         }
 
@@ -1610,7 +1621,7 @@ void Game_Update(void)
         }
     }
 
-    if (bullet.active)
+    if (bullet.active || ShrapnelFlying())
     {
         CP_Image_Draw(speedBoosted ? speedBtn2xImage : speedBtn1xImage,
             140.0f, 60.0f, 440.0f, 160.0f, 255);
