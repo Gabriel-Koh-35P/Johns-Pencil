@@ -1,0 +1,1082 @@
+[
+  {
+    "question": "Sizes: A 3x4, B px2, C qxr, D 4x5, E sxt, F 5x2. If [A(BC - D) + E]F is defined, what are (p,q,r,s,t) and the final size?",
+    "options": [
+      "(4,2,3,3,5), 3x2",
+      "(2,4,5,3,5), 3x2",
+      "(4,2,5,3,5), 3x5",
+      "(4,2,5,3,5), 3x2"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Scaling about the origin: kx is 1.5 times ky and area becomes 6 times. Where does (-2,3) go?",
+    "options": [
+      "(-4,9)",
+      "(-3,12)",
+      "(-6,6)",
+      "(-12,3)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Rotation about the y-axis (0 < theta < 180 deg) moves (2,0,0) to (-1,0,-sqrt3). Where does (1,-2,3) go?",
+    "options": [
+      "((3sqrt3-1)/2, 2, -(sqrt3+3)/2)",
+      "((3sqrt3-1)/2, -2, (sqrt3-3)/2)",
+      "((1+3sqrt3)/2, -2, (3-sqrt3)/2)",
+      "((3sqrt3-1)/2, -2, -(sqrt3+3)/2)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Reflect (1,3) across the line through the origin with normal <2,-1>, then scale by 5 (x) and 10 (y). Final point?",
+    "options": [
+      "(26,9)",
+      "(-9,26)",
+      "(9,26)",
+      "(18,13)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "A 3D model is rotated 60 deg about the y-axis, then orthogonally projected onto the xy-plane. Which matrix is this?",
+    "options": [
+      "[[1/2,0,-sqrt3/2],[0,1,0],[0,0,0]]",
+      "[[sqrt3/2,0,1/2],[0,1,0],[0,0,0]]",
+      "[[1/2,0,sqrt3/2],[0,0,0],[-sqrt3/2,0,1/2]]",
+      "[[1/2,0,sqrt3/2],[0,1,0],[0,0,0]]"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "A 3D model is transformed by diag(2, 1/3, 4). Afterwards A'=(2,-1,8) and B'=(-4,2,12). Find the original vector AB.",
+    "options": [
+      "<-2, 6, 3>",
+      "<-3, 1, 1>",
+      "<3, -9, -1>",
+      "<-3, 9, 1>"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "A point is rotated 120 deg about the x-axis and lands at (1,2,0). What were its original coordinates?",
+    "options": [
+      "(1,-sqrt3,-1)",
+      "(-1,-1,-sqrt3)",
+      "(1,-1,-sqrt3)",
+      "(1,1,-sqrt3)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "An image is scaled by 2 (x) and 3 (y), then rotated 90 deg about the origin. Which matrix maps it back?",
+    "options": [
+      "[[0,-1/2],[1/3,0]]",
+      "[[0,2],[-3,0]]",
+      "[[0,1/2],[-1/3,0]]",
+      "[[0,1/3],[-1/2,0]]"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Vertex: rotate 90 deg about z, scale (2,3,4), rotate 90 deg about x. It ends at (-4,-8,9). Where did it start?",
+    "options": [
+      "(3,2,2)",
+      "(4,3,2)",
+      "(2,3,2)",
+      "(3,2,-2)"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "For which values of k does the determinant of [[k,2],[3,k+1]] equal zero?",
+    "options": [
+      "k = 2 or k = 3",
+      "k = -2 or k = -3",
+      "k = -3 or k = 2",
+      "k = 3 or k = -2"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "A is 2x3 and B is 3x4. What size is AB?",
+    "options": [
+      "4x2",
+      "3x3",
+      "3x4",
+      "2x4"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "A is 4x2 and B is 2x5. What size is AB?",
+    "options": [
+      "4x2",
+      "5x4",
+      "2x2",
+      "4x5"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "A is mxn and B is pxq. When can you compute AB?",
+    "options": [
+      "m = q",
+      "m = p",
+      "n = p",
+      "n = q"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "A is 3x3 and B is 3x1. What size is AB?",
+    "options": [
+      "3x3",
+      "AB is not defined",
+      "1x3",
+      "3x1"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "A and B are both 2x3. Which statement is true?",
+    "options": [
+      "AB is not defined",
+      "AB is 2x3",
+      "AB is 2x2",
+      "AB is 3x3"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "A and B are both 3x4. What size is A + B?",
+    "options": [
+      "6x8",
+      "3x4",
+      "4x4",
+      "3x3"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Is AB always equal to BA for matrices?",
+    "options": [
+      "Yes, always",
+      "Only when A + B = 0",
+      "Only for square matrices",
+      "No, not in general"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "If I is the identity matrix of the right size, what is IA?",
+    "options": [
+      "0",
+      "A squared",
+      "A",
+      "I"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "What is the size of the transpose of a 2x3 matrix?",
+    "options": [
+      "3x3",
+      "2x2",
+      "2x3",
+      "3x2"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute [[1,2],[3,4]] times the column <1,1>.",
+    "options": [
+      "<3, 7>",
+      "<3, 4>",
+      "<4, 6>",
+      "<7, 3>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute [[2,0],[0,3]] times the column <1,2>.",
+    "options": [
+      "<2, 6>",
+      "<2, 5>",
+      "<1, 6>",
+      "<3, 6>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute [[1,2],[3,4]] + [[1,1],[1,1]].",
+    "options": [
+      "[[2,3],[4,5]]",
+      "[[2,2],[4,5]]",
+      "[[1,2],[3,4]]",
+      "[[2,3],[4,4]]"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute 3 times [[1,2],[0,-1]].",
+    "options": [
+      "[[3,2],[0,-1]]",
+      "[[3,6],[0,3]]",
+      "[[4,5],[3,2]]",
+      "[[3,6],[0,-3]]"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "What is the inverse of [[2,0],[0,4]]?",
+    "options": [
+      "[[-2,0],[0,-4]]",
+      "[[0,2],[4,0]]",
+      "[[1/2,0],[0,1/4]]",
+      "[[2,0],[0,4]]"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "To undo a transformation with matrix M, you apply which matrix?",
+    "options": [
+      "M squared",
+      "The inverse of M",
+      "The transpose of M",
+      "Negative M"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Transform A is applied first, then B. Which single matrix does both?",
+    "options": [
+      "AB",
+      "A inverse times B",
+      "BA",
+      "A + B"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "What is the determinant of [[2,1],[3,4]]?",
+    "options": [
+      "-5",
+      "8",
+      "11",
+      "5"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "What is the determinant of [[1,2],[3,4]]?",
+    "options": [
+      "2",
+      "-10",
+      "-2",
+      "10"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "What is the determinant of [[1,2],[2,4]]?",
+    "options": [
+      "8",
+      "2",
+      "0",
+      "6"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "What is the determinant of the 2x2 identity matrix?",
+    "options": [
+      "1",
+      "0",
+      "2",
+      "-1"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "What is the determinant of [[3,0],[0,5]]?",
+    "options": [
+      "0",
+      "15",
+      "-15",
+      "8"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "What is the determinant of [[2,5],[0,3]]?",
+    "options": [
+      "6",
+      "11",
+      "10",
+      "5"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "What is the determinant of [[0,1],[1,0]]?",
+    "options": [
+      "-1",
+      "1",
+      "0",
+      "2"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "What is the determinant of diag(1,2,3)?",
+    "options": [
+      "5",
+      "9",
+      "6",
+      "0"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "What is the determinant of the 3x3 identity matrix?",
+    "options": [
+      "0",
+      "3",
+      "1",
+      "-1"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "For which k is the determinant of [[k,4],[1,2]] equal to zero?",
+    "options": [
+      "k = 4",
+      "k = 1",
+      "k = -2",
+      "k = 2"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "For which k is the determinant of [[1,k],[2,6]] equal to zero?",
+    "options": [
+      "k = 2",
+      "k = 3",
+      "k = 6",
+      "k = 1"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "A matrix with determinant 0 is called what?",
+    "options": [
+      "Singular",
+      "Orthogonal",
+      "Invertible",
+      "Identity"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "If det A = 0, is A invertible?",
+    "options": [
+      "Yes",
+      "No",
+      "Only if it is symmetric",
+      "Only if it is 2x2"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "If det A = 3 for a 2x2 matrix A, what is det(2A)?",
+    "options": [
+      "9",
+      "6",
+      "3",
+      "12"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "A transformation matrix has determinant 4. By what factor does it scale areas?",
+    "options": [
+      "16",
+      "2",
+      "4",
+      "1/4"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "A transformation matrix has determinant -1. What does it do?",
+    "options": [
+      "Shrinks everything to a point",
+      "Keeps orientation and area",
+      "Flips orientation, keeps area",
+      "Doubles areas"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "What happens to a determinant if you swap two rows?",
+    "options": [
+      "Nothing",
+      "It doubles",
+      "It becomes zero",
+      "It changes sign"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "What is the determinant of a matrix with a row of all zeros?",
+    "options": [
+      "It is undefined",
+      "0",
+      "-1",
+      "1"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "If det A = 0, what can be said about Ax = b?",
+    "options": [
+      "Exactly one solution always",
+      "No unique solution",
+      "It always has a solution",
+      "No solution always"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "What is the determinant of a 2D rotation matrix?",
+    "options": [
+      "0",
+      "1",
+      "2",
+      "-1"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "What is the determinant of a 2D reflection matrix?",
+    "options": [
+      "2",
+      "1",
+      "0",
+      "-1"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Scale by (2,3) about the origin. Where does (1,1) go?",
+    "options": [
+      "(3,2)",
+      "(1,1)",
+      "(2,3)",
+      "(3,4)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Scale by (3,3) about the origin. Where does (2,-1) go?",
+    "options": [
+      "(-6,3)",
+      "(6,-3)",
+      "(5,2)",
+      "(6,3)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Scale by (0.5, 0.5) about the origin. Where does (4,6) go?",
+    "options": [
+      "(8,12)",
+      "(4,6)",
+      "(2,6)",
+      "(2,3)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Scale by (4,1) about the origin. Where does (3,5) go?",
+    "options": [
+      "(7,6)",
+      "(3,20)",
+      "(12,20)",
+      "(12,5)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Which matrix scales x by 2 and y by 5?",
+    "options": [
+      "[[5,0],[0,2]]",
+      "[[0,2],[5,0]]",
+      "[[2,5],[0,0]]",
+      "[[2,0],[0,5]]"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "A shape has area 4. After scaling by 2 (x) and 3 (y), what is its area?",
+    "options": [
+      "24",
+      "6",
+      "9",
+      "12"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Scaling by (1,-1) is the same as what?",
+    "options": [
+      "Reflection across the x-axis",
+      "Rotation by 180 deg",
+      "No change",
+      "Reflection across the y-axis"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "kx is twice ky and the area becomes 8 times larger. Where does (1,3) go?",
+    "options": [
+      "(4,12)",
+      "(4,6)",
+      "(8,6)",
+      "(2,6)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "To undo scaling by (2,4), which scaling do you apply?",
+    "options": [
+      "(1/2, 1/4)",
+      "(1/4, 1/2)",
+      "(2,4)",
+      "(-2,-4)"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "After scaling by (2,3) a point is at (6,9). Where was it originally?",
+    "options": [
+      "(3,3)",
+      "(4,6)",
+      "(12,27)",
+      "(3,6)"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Rotate (1,0) by 90 deg counterclockwise about the origin.",
+    "options": [
+      "(0,-1)",
+      "(-1,0)",
+      "(1,1)",
+      "(0,1)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Rotate (0,1) by 90 deg counterclockwise about the origin.",
+    "options": [
+      "(0,-1)",
+      "(0,1)",
+      "(1,0)",
+      "(-1,0)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Rotate (2,3) by 90 deg counterclockwise about the origin.",
+    "options": [
+      "(3,2)",
+      "(-3,2)",
+      "(-2,-3)",
+      "(3,-2)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Rotate (1,1) by 90 deg counterclockwise about the origin.",
+    "options": [
+      "(1,-1)",
+      "(-1,-1)",
+      "(1,1)",
+      "(-1,1)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Rotate (-2,0) by 90 deg counterclockwise about the origin.",
+    "options": [
+      "(-2,0)",
+      "(2,0)",
+      "(0,-2)",
+      "(0,2)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Rotate (3,1) by 180 deg about the origin.",
+    "options": [
+      "(3,-1)",
+      "(1,3)",
+      "(-3,-1)",
+      "(-3,1)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Rotate (1,2) by 270 deg counterclockwise about the origin.",
+    "options": [
+      "(2,-1)",
+      "(-2,1)",
+      "(-2,-1)",
+      "(-1,-2)"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Rotate (1,0) by 60 deg counterclockwise about the origin.",
+    "options": [
+      "(1/2, -sqrt3/2)",
+      "(1/2, sqrt3/2)",
+      "(-1/2, sqrt3/2)",
+      "(sqrt3/2, 1/2)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Rotate (1,0) by 45 deg counterclockwise about the origin.",
+    "options": [
+      "(sqrt2/2, -sqrt2/2)",
+      "(1/2, 1/2)",
+      "(sqrt2/2, sqrt2/2)",
+      "(1,1)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "What does rotating a point by 360 deg do?",
+    "options": [
+      "Reflects it",
+      "Doubles its distance",
+      "Leaves it unchanged",
+      "Moves it to the origin"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Which matrix rotates points 90 deg counterclockwise?",
+    "options": [
+      "[[-1,0],[0,-1]]",
+      "[[0,1],[-1,0]]",
+      "[[1,0],[0,1]]",
+      "[[0,-1],[1,0]]"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Which matrix rotates points by 180 deg?",
+    "options": [
+      "[[-1,0],[0,-1]]",
+      "[[-1,0],[0,1]]",
+      "[[0,-1],[1,0]]",
+      "[[1,0],[0,-1]]"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "What does a rotation about the origin preserve?",
+    "options": [
+      "The x-coordinate",
+      "Distance from the origin",
+      "The y-coordinate",
+      "The slope of lines"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Rotating by 90 deg counterclockwise twice is the same as what?",
+    "options": [
+      "A reflection",
+      "Rotating by 360 deg",
+      "No change",
+      "Rotating by 180 deg"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "To undo a 90 deg counterclockwise rotation, you should do what?",
+    "options": [
+      "Rotate 90 deg counterclockwise",
+      "Scale by -1",
+      "Rotate 90 deg clockwise",
+      "Reflect across the x-axis"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "After a 90 deg counterclockwise rotation a point lands at (0,5). Where was it?",
+    "options": [
+      "(0,-5)",
+      "(5,5)",
+      "(5,0)",
+      "(-5,0)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Reflect (3,2) across the x-axis.",
+    "options": [
+      "(-3,-2)",
+      "(3,-2)",
+      "(2,3)",
+      "(-3,2)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Reflect (3,2) across the y-axis.",
+    "options": [
+      "(2,3)",
+      "(-3,2)",
+      "(3,-2)",
+      "(-3,-2)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Reflect (3,2) across the line y = x.",
+    "options": [
+      "(3,-2)",
+      "(-3,2)",
+      "(-2,-3)",
+      "(2,3)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Reflect (4,-1) through the origin (point reflection).",
+    "options": [
+      "(4,1)",
+      "(1,-4)",
+      "(-4,-1)",
+      "(-4,1)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Which matrix reflects points across the x-axis?",
+    "options": [
+      "[[-1,0],[0,1]]",
+      "[[0,1],[1,0]]",
+      "[[-1,0],[0,-1]]",
+      "[[1,0],[0,-1]]"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Which matrix reflects points across the y-axis?",
+    "options": [
+      "[[-1,0],[0,1]]",
+      "[[0,1],[1,0]]",
+      "[[1,0],[0,-1]]",
+      "[[1,0],[0,1]]"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Reflecting a point across the x-axis twice gives what?",
+    "options": [
+      "A rotation by 90 deg",
+      "The original point",
+      "A point twice as far away",
+      "A point on the y-axis"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Reflect (2,5) across the line through the origin with normal <1,0>.",
+    "options": [
+      "(-2,-5)",
+      "(-2,5)",
+      "(5,2)",
+      "(2,-5)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Reflect (3,4) across the line through the origin with normal <0,1>.",
+    "options": [
+      "(3,-4)",
+      "(-3,-4)",
+      "(-3,4)",
+      "(4,3)"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Reflect (1,0) across the line through the origin with normal <1,1>.",
+    "options": [
+      "(0,-1)",
+      "(1,1)",
+      "(0,1)",
+      "(-1,0)"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Reflecting across the x-axis then the y-axis equals what?",
+    "options": [
+      "Reflection across y = x",
+      "Scaling by 2",
+      "Rotation by 180 deg",
+      "The identity"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Reflect (1,2) across the y-axis, then scale by 2 (x) and 3 (y). Final point?",
+    "options": [
+      "(-3,4)",
+      "(-2,-6)",
+      "(-2,6)",
+      "(2,6)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Scale by (2,2), then rotate 90 deg counterclockwise. Where does (1,0) go?",
+    "options": [
+      "(0,-2)",
+      "(-2,0)",
+      "(0,2)",
+      "(2,0)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Rotate 90 deg counterclockwise, then scale by (3,1). Where does (0,2) go?",
+    "options": [
+      "(6,0)",
+      "(-6,0)",
+      "(-2,0)",
+      "(0,-6)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "A rotation about the z-axis leaves which coordinate unchanged?",
+    "options": [
+      "x",
+      "None of them",
+      "y",
+      "z"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "A rotation about the x-axis leaves which coordinate unchanged?",
+    "options": [
+      "None of them",
+      "z",
+      "x",
+      "y"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Rotate (1,0,0) by 90 deg about the z-axis (right-hand rule).",
+    "options": [
+      "(-1,0,0)",
+      "(0,1,0)",
+      "(0,0,1)",
+      "(0,-1,0)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Rotate (0,1,0) by 90 deg about the x-axis (right-hand rule).",
+    "options": [
+      "(1,0,0)",
+      "(0,0,1)",
+      "(0,-1,0)",
+      "(0,0,-1)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Rotate (0,0,1) by 90 deg about the x-axis (right-hand rule).",
+    "options": [
+      "(1,0,0)",
+      "(0,0,-1)",
+      "(0,1,0)",
+      "(0,-1,0)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Rotate (1,0,0) by 90 deg about the y-axis (right-hand rule).",
+    "options": [
+      "(-1,0,0)",
+      "(0,0,1)",
+      "(0,0,-1)",
+      "(0,1,0)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Rotate (1,2,3) by 180 deg about the z-axis.",
+    "options": [
+      "(-1,-2,3)",
+      "(1,2,-3)",
+      "(-1,2,3)",
+      "(-1,-2,-3)"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Rotate (1,2,3) by 180 deg about the x-axis.",
+    "options": [
+      "(1,-2,-3)",
+      "(-1,-2,3)",
+      "(1,-2,3)",
+      "(-1,2,3)"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "A point rotated 90 deg about the z-axis lands at (0,2,3). Where was it?",
+    "options": [
+      "(0,-2,3)",
+      "(2,0,3)",
+      "(-2,0,3)",
+      "(2,0,-3)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "A point rotated 180 deg about the x-axis lands at (1,2,3). Where was it?",
+    "options": [
+      "(1,2,-3)",
+      "(-1,-2,-3)",
+      "(-1,2,3)",
+      "(1,-2,-3)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Scale by (2,3,4) along x, y, z. Where does (1,2,3) go?",
+    "options": [
+      "(3,5,7)",
+      "(1,6,12)",
+      "(2,3,4)",
+      "(2,6,12)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Which matrix scales x by 2, y by 3 and z by 4?",
+    "options": [
+      "[[1,0,0],[0,1,0],[0,0,1]]",
+      "[[4,0,0],[0,3,0],[0,0,2]]",
+      "[[2,0,0],[0,3,0],[0,0,4]]",
+      "[[2,3,4],[0,0,0],[0,0,0]]"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "After scaling by (2,3,4) a vertex is at (4,6,8). Where was it?",
+    "options": [
+      "(4,6,8)",
+      "(8,18,32)",
+      "(6,9,12)",
+      "(2,2,2)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Scaling by diag(2,3,1) puts A' at (2,3,1) and B' at (6,9,4). Find the original vector AB.",
+    "options": [
+      "<2, 3, 3>",
+      "<8, 18, 3>",
+      "<2, 2, 3>",
+      "<4, 6, 3>"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Orthogonally project (3,4,5) onto the xy-plane.",
+    "options": [
+      "(0,0,5)",
+      "(3,4,0)",
+      "(3,4,5)",
+      "(3,0,5)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Orthogonally project (3,4,5) onto the xz-plane.",
+    "options": [
+      "(3,4,0)",
+      "(3,0,5)",
+      "(0,4,0)",
+      "(0,4,5)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Orthogonally project (7,2,-1) onto the yz-plane.",
+    "options": [
+      "(0,0,-1)",
+      "(0,2,-1)",
+      "(7,0,-1)",
+      "(7,2,0)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Which matrix orthogonally projects onto the xy-plane?",
+    "options": [
+      "[[0,0,0],[0,0,0],[0,0,1]]",
+      "[[0,0,0],[0,1,0],[0,0,1]]",
+      "[[1,0,0],[0,0,0],[0,0,1]]",
+      "[[1,0,0],[0,1,0],[0,0,0]]"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Projecting a point onto the xy-plane twice gives what?",
+    "options": [
+      "Double the point",
+      "Same result as projecting once",
+      "The origin",
+      "The original point"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Rotate (1,2,5) by 90 deg about z, then project onto the xy-plane.",
+    "options": [
+      "(1,2,0)",
+      "(2,1,0)",
+      "(-2,1,0)",
+      "(-2,1,5)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "A 3x3 matrix times a 3x1 column gives what size?",
+    "options": [
+      "3x3",
+      "3x1",
+      "1x3",
+      "1x1"
+    ],
+    "answer": 1
+  }
+]

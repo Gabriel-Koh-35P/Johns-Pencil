@@ -18,6 +18,7 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="mainmenu.c" />
     <ClCompile Include="progress.c" />
+    <ClCompile Include="questions.c" />
     <ClCompile Include="utils.c" />
   </ItemGroup>
   <ItemGroup>
@@ -27,7 +28,11 @@
     <ClInclude Include="levelselect.h" />
     <ClInclude Include="mainmenu.h" />
     <ClInclude Include="progress.h" />
+    <ClInclude Include="questions.h" />
     <ClInclude Include="utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="questions.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
