@@ -103,8 +103,7 @@ static CP_Image speedBtn2xImage;
 
 static int   awaitingQuestion;   /* 1 while the MCQ popup is showing, pauses the game */
 static int   correctOption;      /* index 0-3 of the correct answer this question */
-static int   pierceAmmo;        /* how many of our ammmo are pens*/
-static int   usePen;          /* 1: the next fired bullet is a pen, not a pencil */
+
 
 static float optionX[OPTION_COUNT];
 static float optionY[OPTION_COUNT];
@@ -190,6 +189,8 @@ static Bullet    bullet;
 static int       aiming;
 static int       ammo;
 static int       levelStartAmmo;   /* bullets this level starts with */
+static int       pierceAmmo;        /* how many of our ammmo are pens*/
+static int       usePen;          /* 1: the next fired bullet is a pen, not a pencil */
 static int       seeded;           /* random generator seeded yet? */
 static int speedBoosted;   /* 1 = current bullet is at 2x speed */
 static float clearTimer;   /* time since the last enemy died, before showing the menu */
@@ -780,20 +781,22 @@ static void DrawAmmo(void)
     float x = playerPos.x + 120.0f;
     float y = (float)CP_System_GetWindowHeight() - 60.0f;
 
+    float drawX = x;
     for (i = 0; i < ammo; i++)
     {
         /* icon 0 is the next shot: pens first if selected, else pencils first */
         int isPen = usePen ? (i < pierceAmmo) : (i >= normalCount);
         CP_Image img = isPen ? bulletPierceAmmoImage : bulletAmmoImage;
-
-        float drawX = x + i * AMMO_ICON_STEP;
-
+        
         /* push pens further out: gap before the first pen of the group */
         if (isPen)
             drawX += PEN_EXTRA_GAP;
 
         CP_Image_DrawAdvanced(img, drawX, y,
             AMMO_ICON_W, AMMO_ICON_H, 255, -90.0f);
+        
+        drawX += AMMO_ICON_STEP;
+
     }
 }
 
