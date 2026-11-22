@@ -40,6 +40,8 @@ static CP_Image backBtnImage;
 static CP_Image pageTitleImage;
 static CP_Image pageTitle2Image;
 static CP_Image pageTitle3Image;
+static CP_Image pageBg2Image;
+static CP_Image pageBg3Image;
 static CP_Image arrowBtnImage;
 
 static float btnX[LEVEL_COUNT];
@@ -75,10 +77,12 @@ void Level_Select_Init(void)
     lockedImage = CP_Image_Load("Assets/locked_level.png");
 	lockedImage2 = CP_Image_Load("Assets/locked_level2.png"); /* locked image for page 2 */
     backBtnImage = CP_Image_Load("Assets/menu_back_btn.png");
-    pageTitleImage = CP_Image_Load("Assets/page_1.png");     /* NEW */
-    pageTitle2Image = CP_Image_Load("Assets/page_2.png");    /* NEW */
-    pageTitle3Image = CP_Image_Load("Assets/page_3.png");    /* NEW */
-    arrowBtnImage = CP_Image_Load("Assets/next_page.png");   /* NEW */
+    pageTitleImage = CP_Image_Load("Assets/page_1.png");     
+    pageTitle2Image = CP_Image_Load("Assets/page_2.png");    
+    pageTitle3Image = CP_Image_Load("Assets/page_3.png");    
+    pageBg2Image = CP_Image_Load("Assets/background_stage_2.png");
+    pageBg3Image = CP_Image_Load("Assets/background_stage_3.png");
+    arrowBtnImage = CP_Image_Load("Assets/next_page.png");   
 
 	for (i = 0; i < LEVELS_PER_PAGE; i++) // changed: positions are now calculated based on the current page and the number of levels per page
     {
@@ -106,7 +110,11 @@ void Level_Select_Update(void)
     float pageBtnDrawX = (currentPage == 0) ? w * 0.85f : w * 0.15f;
     const char* pageLabel = (currentPage == 0) ? ">" : "<";
 
-    CP_Image_Draw(Progress_GetBackground(), w / 2.0f, h / 2.0f, w, h, 255);
+    CP_Image bg = Progress_GetBackground();
+    if (currentPage == 1) bg = pageBg2Image;
+    else if (currentPage == 2) bg = pageBg3Image;
+
+    CP_Image_Draw(bg, w / 2.0f, h / 2.0f, w, h, 255);
 
     for (i = 0; i < LEVELS_PER_PAGE; i++)
     {

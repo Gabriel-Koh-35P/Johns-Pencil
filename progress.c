@@ -18,6 +18,7 @@ static int currentLevel;
 static int initialized;
 static CP_Image stage1Background;
 static CP_Image stage2Background;
+static CP_Image stage3Background;
 static int       backgroundLoaded;
 
 void Progress_LoadBackground(void)
@@ -27,13 +28,14 @@ void Progress_LoadBackground(void)
 
     stage1Background = CP_Image_Load("Assets/background_main_menu_stage_1.png");
     stage2Background = CP_Image_Load("Assets/background_stage_2.png");   
+    stage3Background = CP_Image_Load("Assets/background_stage_3.png");
     backgroundLoaded = 1;
 }
 
 CP_Image Progress_GetBackground(void)
 {
     if (currentLevel >= 13 && currentLevel <= 18) {
-        return stage1Background;
+        return stage3Background;
     }
     else if (currentLevel >= 7 && currentLevel <= 12) {
         return stage2Background;
