@@ -12,6 +12,25 @@
 #include "cprocessing.h"
 #include "mainmenu.h"
 
+static int isFullscreen = 0;
+
+// Full screen toggle hotkey (F)
+void HandleGlobalHotkeys(void)
+{
+    if (CP_Input_KeyTriggered(KEY_F))
+    {
+        isFullscreen = !isFullscreen;
+        if (isFullscreen)
+        {
+            CP_System_Fullscreen();
+        }
+        else
+        {
+            /* Restore your default windowed resolution (e.g., 1600x900 or 1280x720) */
+            CP_System_SetWindowSize(1600, 900);
+        }
+    }
+}
 
 // main() the starting point for the program
 // CP_Engine_SetNextGameState() tells CProcessing which functions to use for init, update and exit
@@ -20,6 +39,7 @@ int main(void)
 {
 	CP_Engine_SetNextGameState(Main_Menu_Init, Main_Menu_Update, Main_Menu_Exit);
 	CP_System_SetWindowSize(1600, 900);
-	CP_Engine_Run(0);
+    CP_Engine_SetPreUpdateFunction(HandleGlobalHotkeys);
+    CP_Engine_Run(0);
 	return 0;
 }
