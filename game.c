@@ -669,16 +669,194 @@ static void UpdateShrapnel(float dt)
     }
 }
 
+/* Raycast a circle of radius r along (origin + t * dir) against a centered rectangle.
+   Returns 1 if hit closer than *bestT, updating *bestT and *bestNormal. */
+static int RaycastRect(CP_Vector origin, CP_Vector dir, float r,
+    CP_Vector rectPos, float w, float h,
+    float* bestT, CP_Vector* bestNormal)
+{
+    float minX = rectPos.x - w * 0.5f - r;
+    float maxX = rectPos.x + w * 0.5f + r;
+    float minY = rectPos.y - h * 0.5f - r;
+    float maxY = rectPos.y + h * 0.5f + r;
+
+    float tMin = 0.0f;
+    float tMax = *bestT;
+    CP_Vector hitNormal = CP_Vector_Set(0.0f, 0.0f);
+
+    /* X slab */
+    if (fabsf(dir.x) < 1e-6f)
+    {
+        if (origin.x < minX || origin.x > maxX)
+            return 0;
+    }
+    else
+    {
+        float invD = 1.0f / dir.x;
+        float t1 = (minX - origin.x) * invD;
+        float t2 = (maxX - origin.x) * invD;
+        CP_Vector n = CP_Vector_Set(-1.0f, 0.0f);
+
+        if (t1 > t2)
+        {
+            float tmp = t1; t1 = t2; t2 = tmp;
+            n.x = 1.0f;
+        }
+        if (t1 > tMin)
+        {
+            tMin = t1;
+            hitNormal = n;
+        }
+        if (t2 < tMax)
+            tMax = t2;
+        if (tMin > tMax)
+            return 0;
+    }
+
+    /* Y slab */
+    if (fabsf(dir.y) < 1e-6f)
+    {
+        if (origin.y < minY || origin.y > maxY)
+            return 0;
+    }
+    else
+    {
+        float invD = 1.0f / dir.y;
+        float t1 = (minY - origin.y) * invD;
+        float t2 = (maxY - origin.y) * invD;
+        CP_Vector n = CP_Vector_Set(0.0f, -1.0f);
+
+        if (t1 > t2)
+        {
+            float tmp = t1; t1 = t2; t2 = tmp;
+            n.y = 1.0f;
+        }
+        if (t1 > tMin)
+        {
+            tMin = t1;
+            hitNormal = n;
+        }
+        if (t2 < tMax)
+            tMax = t2;
+        if (tMin > tMax)
+            return 0;
+    }
+
+    if (tMin > 0.0f && tMin < *bestT)
+    {
+        *bestT = tMin;
+        *bestNormal = hitNormal;
+        return 1;
+    }
+    return 0;
+}
+
+/* Casts a single ray segment against window edges, walls, boxes, and closed doors */
+static int CastAimSegment(CP_Vector origin, CP_Vector dir, float maxDist,
+    CP_Vector* outHitPos, CP_Vector* outReflectDir)
+{
+    float winW = (float)CP_System_GetWindowWidth();
+    float winH = (float)CP_System_GetWindowHeight();
+    float r = BULLET_DIAMETER * 0.5f;
+    float bestT = maxDist;
+    CP_Vector normal = CP_Vector_Set(0.0f, 0.0f);
+    int hit = 0;
+    int i;
+
+    /* 1. Window boundaries (left, right, top — bottom exits the screen like BounceProjectile) */
+    if (dir.x < -1e-6f)
+    {
+        float t = (r - origin.x) / dir.x;
+        if (t > 0.0f && t < bestT) { bestT = t; normal = CP_Vector_Set(1.0f, 0.0f); hit = 1; }
+    }
+    else if (dir.x > 1e-6f)
+    {
+        float t = (winW - r - origin.x) / dir.x;
+        if (t > 0.0f && t < bestT) { bestT = t; normal = CP_Vector_Set(-1.0f, 0.0f); hit = 1; }
+    }
+
+    if (dir.y < -1e-6f)
+    {
+        float t = (r - origin.y) / dir.y;
+        if (t > 0.0f && t < bestT) { bestT = t; normal = CP_Vector_Set(0.0f, 1.0f); hit = 1; }
+    }
+    else if (dir.y > 1e-6f)
+    {
+        /* Stop at the bottom of the window so the line doesn't draw off-screen */
+        float t = (winH - origin.y) / dir.y;
+        if (t > 0.0f && t < bestT) { bestT = t; normal = CP_Vector_Set(0.0f, 0.0f); hit = 0; }
+    }
+
+    /* 2. Walls, boxes, and closed doors (skipped if the active ammo is a piercing pen) */
+    int willPierce = usePen || (ammo <= pierceAmmo && pierceAmmo > 0);
+    if (!willPierce)
+    {
+        for (i = 0; i < wallCount; i++)
+            if (RaycastRect(origin, dir, r, walls[i].pos, walls[i].w, walls[i].h, &bestT, &normal))
+                hit = 1;
+
+        for (i = 0; i < boxCount; i++)
+            if (RaycastRect(origin, dir, r, boxes[i].pos, boxes[i].w, boxes[i].h, &bestT, &normal))
+                hit = 1;
+
+        for (i = 0; i < doorCount; i++)
+            if (!doors[i].open &&
+                RaycastRect(origin, dir, r, doors[i].pos, doors[i].w, doors[i].h, &bestT, &normal))
+                hit = 1;
+    }
+
+    *outHitPos = CP_Vector_Set(origin.x + dir.x * bestT, origin.y + dir.y * bestT);
+
+    if (hit && (normal.x != 0.0f || normal.y != 0.0f))
+    {
+        /* Reflect across axis-aligned surface normal: R = D - 2*(D.N)*N */
+        *outReflectDir = CP_Vector_Set(
+            (normal.x != 0.0f) ? -dir.x : dir.x,
+            (normal.y != 0.0f) ? -dir.y : dir.y
+        );
+        return 1;
+    }
+
+    return 0;
+}
+
+
 /* ---------------------------------------------------------- */
 /* drawing */
 
 static void DrawAimLine(void)
 {
     CP_Vector mouse = CP_Vector_Set(CP_Input_GetMouseX(), CP_Input_GetMouseY());
+    CP_Vector dir = AimDirection(playerPos, mouse);
+    float maxRayDist = 2500.0f;
+    float bouncePreviewLen = 250.0f;   /* length of the 1st reflection preview segment */
 
+    CP_Vector hitPos, reflectDir;
+    int bounced = CastAimSegment(playerPos, dir, maxRayDist, &hitPos, &reflectDir);
+
+    /* Primary aim segment (player to first impact) */
     CP_Settings_Stroke(CP_Color_Create(255, 255, 255, 255));
     CP_Settings_StrokeWeight(3.0f);
-    CP_Graphics_DrawLine(playerPos.x, playerPos.y, mouse.x, mouse.y);
+    CP_Graphics_DrawLine(playerPos.x, playerPos.y, hitPos.x, hitPos.y);
+
+    /* Up to 1 reflection segment */
+    if (bounced)
+    {
+        CP_Vector bounceOrigin = CP_Vector_Set(
+            hitPos.x + reflectDir.x * 0.5f,
+            hitPos.y + reflectDir.y * 0.5f
+        );
+        CP_Vector endPos, unusedDir;
+        CastAimSegment(bounceOrigin, reflectDir, bouncePreviewLen, &endPos, &unusedDir);
+
+        /* Impact point indicator + slightly softer reflected ray */
+        CP_Settings_Fill(CP_Color_Create(255, 255, 255, 220));
+        CP_Graphics_DrawCircle(hitPos.x, hitPos.y, 8.0f);
+
+        CP_Settings_Stroke(CP_Color_Create(255, 255, 255, 160));
+        CP_Settings_StrokeWeight(2.5f);
+        CP_Graphics_DrawLine(hitPos.x, hitPos.y, endPos.x, endPos.y);
+    }
 }
 
 static void DrawWalls(void)
