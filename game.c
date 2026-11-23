@@ -71,10 +71,10 @@
 #define BOSS_PIP_STEP         40.0f
 
 /* area covered by the 1x/2x speed button (same numbers Game_Update uses for it) */
-#define UI_SPEED_X 140.0f
-#define UI_SPEED_Y 60.0f
-#define UI_SPEED_W 440.0f
-#define UI_SPEED_H 160.0f
+#define UI_SPEED_X 75.0f
+#define UI_SPEED_Y 735.0f
+#define UI_SPEED_W 260.0f
+#define UI_SPEED_H 90.0f
 
 #define OPTION_COUNT 4
 #define OPTION_BTN_W 900.0f
@@ -1619,7 +1619,7 @@ void Game_Update(void)
         }
 
         if ((bullet.active || ShrapnelFlying()) && CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT) &&
-            IsAreaClicked(140.0f, 60.0f, 440.0f, 160.0f, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
+            IsAreaClicked(70.0f, 735.0f, 70.0f, 40.0f, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
         {
             float factor = speedBoosted ? 0.5f : 2.0f;
             int s;
@@ -1693,7 +1693,7 @@ void Game_Update(void)
     if (bullet.active || ShrapnelFlying())
     {
         CP_Image_Draw(speedBoosted ? speedBtn2xImage : speedBtn1xImage,
-            140.0f, 60.0f, 440.0f, 160.0f, 255);
+            UI_SPEED_X, UI_SPEED_Y, UI_SPEED_W, UI_SPEED_H, 255);
     }
     DrawShrapnel();
     DrawAmmo();
@@ -1701,18 +1701,18 @@ void Game_Update(void)
     if (!awaitingQuestion && (bullet.active || ShrapnelFlying()))
     {
         int s;
+        float clearX = 65.0f;
+        float clearY = 760.0f;
+
         CP_Settings_Save();
-        CP_Settings_RectMode(CP_POSITION_CENTER);
-        CP_Settings_Fill(CP_Color_Create(150, 70, 70, 255));
-        CP_Graphics_DrawRect(120.0f, 120.0f, 115.0f, 45.0f);
-        CP_Settings_TextSize(20.0f);
+        CP_Settings_TextSize(18.0f);
         CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
-        CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
-        CP_Font_DrawText("Clear shot", 120.0f, 120.0f);
+        CP_Settings_Fill(CP_Color_Create(230, 50, 60, 255));
+        CP_Font_DrawText("clear bullet", clearX, clearY);
         CP_Settings_Restore();
 
         if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT) &&
-            IsAreaClicked(120.0f, 120.0f, 115.0f, 45.0f, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
+            IsAreaClicked(clearX, clearY, 90.0f, 14.0f, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
         {
             bullet.active = 0;
             for (s = 0; s < SHRAPNEL_MAX; s++)
