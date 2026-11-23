@@ -1698,7 +1698,27 @@ void Game_Update(void)
     DrawShrapnel();
     DrawAmmo();
 
+    if (!awaitingQuestion && (bullet.active || ShrapnelFlying()))
+    {
+        int s;
+        CP_Settings_Save();
+        CP_Settings_RectMode(CP_POSITION_CENTER);
+        CP_Settings_Fill(CP_Color_Create(150, 70, 70, 255));
+        CP_Graphics_DrawRect(120.0f, 120.0f, 115.0f, 45.0f);
+        CP_Settings_TextSize(20.0f);
+        CP_Settings_TextAlignment(CP_TEXT_ALIGN_H_CENTER, CP_TEXT_ALIGN_V_MIDDLE);
+        CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
+        CP_Font_DrawText("Clear shot", 120.0f, 120.0f);
+        CP_Settings_Restore();
 
+        if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT) &&
+            IsAreaClicked(120.0f, 120.0f, 115.0f, 45.0f, CP_Input_GetMouseX(), CP_Input_GetMouseY()))
+        {
+            bullet.active = 0;
+            for (s = 0; s < SHRAPNEL_MAX; s++)
+                shrapnel[s].active = 0;
+        }
+    }
 
     if (awaitingQuestion)
         DrawQuestionPopup();
