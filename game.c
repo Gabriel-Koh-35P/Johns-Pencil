@@ -1823,7 +1823,7 @@ void Game_Update(void)
         {
             clearTimer += dt;
 
-            if (clearTimer >= 0.6f)
+            if (clearTimer >= 0.75f)
             {
                 Progress_UnlockLevel(Progress_GetCurrentLevel() + 1);
                 CP_Engine_SetNextGameState(Level_Complete_Init, Level_Complete_Update, Level_Complete_Exit);
