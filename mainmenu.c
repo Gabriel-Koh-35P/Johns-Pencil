@@ -12,6 +12,7 @@
 #include "levelselect.h"
 #include "utils.h"
 #include "progress.h"
+#include "credits.h"
 
 #define PLAY_BTN_W 500.0f
 #define PLAY_BTN_H 300.0f
@@ -38,6 +39,10 @@
 #define HELP_BTN_W 420.0f
 #define HELP_BTN_H 70.0f
 
+/* for the credits button */
+#define CREDITS_BTN_W 260.0f
+#define CREDITS_BTN_H 70.0f
+
 static CP_Font font;
 static CP_Image titleImage;
 static CP_Image dogImage;
@@ -59,6 +64,8 @@ static float centerX, playY, exitY;
 
 static float helpY;
 static int   showHelp;   /* 1 = both panels are visible */
+
+static float creditsX, creditsY;
 
 /* this function draws a semi-transparent panel*/
 static void DrawPanel(float x, float y, float w, float h) {
@@ -212,6 +219,8 @@ void Main_Menu_Init(void)
     centerX = CP_System_GetWindowWidth() * 0.5f;
     playY = CP_System_GetWindowHeight() * 0.38f;
     exitY = CP_System_GetWindowHeight() * 0.62f;
+    creditsX = CP_System_GetWindowWidth() - 180.0f;
+    creditsY = CP_System_GetWindowHeight() - 70.0f;
     helpY = CP_System_GetWindowHeight() * 0.78f;
     showHelp = 0;
 
@@ -240,10 +249,22 @@ void Main_Menu_Update(void)
     float panelY = h * 0.24f;
     float panelH = h * 0.65f;
 
+	// draw the background and title
     CP_Image_Draw(Progress_GetBackground(), w / 2.0f, h / 2.0f, w, h, 255);
+	// draw the title and buttons
     CP_Image_Draw(titleImage, centerX, playY - 220.0f, 800.0f, 200.0f, 255);
+	// draw the play and exit buttons
     CP_Image_Draw(playBtnImage, centerX, playY, PLAY_BTN_W, PLAY_BTN_H, 255);
     CP_Image_Draw(exitBtnImage, centerX, exitY, EXIT_BTN_W, EXIT_BTN_H, 255);
+
+    /* Credits button */
+    int hover = IsAreaClicked(creditsX, creditsY, CREDITS_BTN_W, CREDITS_BTN_H,
+    CP_Input_GetMouseX(), CP_Input_GetMouseY());
+    CP_Settings_Fill(CP_Color_Create(0, 0, 0, hover ? 200 : 140));
+    CP_Graphics_DrawRectAdvanced(creditsX, creditsY, CREDITS_BTN_W, CREDITS_BTN_H, 0.0f, 20.0f);
+    CP_Settings_Fill(CP_Color_Create(255, 255, 255, 255));
+    CP_Settings_TextSize(40.0f);
+    CP_Font_DrawText("Credits", creditsX, creditsY);
 
     /* this shows the help panels once How to Play is clicked */
     if (showHelp)
@@ -271,7 +292,8 @@ void Main_Menu_Update(void)
             CP_Engine_SetNextGameState(Level_Select_Init, Level_Select_Update, Level_Select_Exit);
         else if (IsAreaClicked(centerX, exitY, EXIT_BTN_W, EXIT_BTN_H, mx, my))
             CP_Engine_Terminate();
-        
+        else if (IsAreaClicked(creditsX, creditsY, CREDITS_BTN_W, CREDITS_BTN_H, mx, my))
+            CP_Engine_SetNextGameState(Credits_Init, Credits_Update, Credits_Exit);
     }
 }
 
