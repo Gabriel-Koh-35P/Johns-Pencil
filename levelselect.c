@@ -80,7 +80,7 @@ void Level_Select_Init(void)
     pageTitleImage = CP_Image_Load("Assets/page_1.png");     
     pageTitle2Image = CP_Image_Load("Assets/page_2.png");    
     pageTitle3Image = CP_Image_Load("Assets/page_3.png");    
-    pageBg2Image = CP_Image_Load("Assets/background_stage_2.png");
+    pageBg2Image = CP_Image_Load("Assets/background_stage_2_new.png");
     pageBg3Image = CP_Image_Load("Assets/background_stage_3.png");
     arrowBtnImage = CP_Image_Load("Assets/next_page.png");   
 
