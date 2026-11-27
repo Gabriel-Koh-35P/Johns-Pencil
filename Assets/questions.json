@@ -1,296 +1,246 @@
 [
   {
-    "question": "Sizes: A 3x4, B px2, C qxr, D 4x5, E sxt, F 5x2. If [A(BC - D) + E]F is defined, what are (p,q,r,s,t) and the final size?",
+    "question": "Compute <1, 3, 3> + <-3, 4, 4>.",
     "options": [
-      "(4,2,3,3,5), 3x2",
-      "(2,4,5,3,5), 3x2",
-      "(4,2,5,3,5), 3x5",
-      "(4,2,5,3,5), 3x2"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Scaling about the origin: kx is 1.5 times ky and area becomes 6 times. Where does (-2,3) go?",
-    "options": [
-      "(-4,9)",
-      "(-3,12)",
-      "(-6,6)",
-      "(-12,3)"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Rotation about the y-axis (0 < theta < 180 deg) moves (2,0,0) to (-1,0,-sqrt3). Where does (1,-2,3) go?",
-    "options": [
-      "((3sqrt3-1)/2, 2, -(sqrt3+3)/2)",
-      "((3sqrt3-1)/2, -2, (sqrt3-3)/2)",
-      "((1+3sqrt3)/2, -2, (3-sqrt3)/2)",
-      "((3sqrt3-1)/2, -2, -(sqrt3+3)/2)"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Reflect (1,3) across the line through the origin with normal <2,-1>, then scale by 5 (x) and 10 (y). Final point?",
-    "options": [
-      "(26,9)",
-      "(-9,26)",
-      "(9,26)",
-      "(18,13)"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "A 3D model is rotated 60 deg about the y-axis, then orthogonally projected onto the xy-plane. Which matrix is this?",
-    "options": [
-      "[[1/2,0,-sqrt3/2],[0,1,0],[0,0,0]]",
-      "[[sqrt3/2,0,1/2],[0,1,0],[0,0,0]]",
-      "[[1/2,0,sqrt3/2],[0,0,0],[-sqrt3/2,0,1/2]]",
-      "[[1/2,0,sqrt3/2],[0,1,0],[0,0,0]]"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "A 3D model is transformed by diag(2, 1/3, 4). Afterwards A'=(2,-1,8) and B'=(-4,2,12). Find the original vector AB.",
-    "options": [
-      "<-2, 6, 3>",
-      "<-3, 1, 1>",
-      "<3, -9, -1>",
-      "<-3, 9, 1>"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "A point is rotated 120 deg about the x-axis and lands at (1,2,0). What were its original coordinates?",
-    "options": [
-      "(1,-sqrt3,-1)",
-      "(-1,-1,-sqrt3)",
-      "(1,-1,-sqrt3)",
-      "(1,1,-sqrt3)"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "An image is scaled by 2 (x) and 3 (y), then rotated 90 deg about the origin. Which matrix maps it back?",
-    "options": [
-      "[[0,-1/2],[1/3,0]]",
-      "[[0,2],[-3,0]]",
-      "[[0,1/2],[-1/3,0]]",
-      "[[0,1/3],[-1/2,0]]"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Vertex: rotate 90 deg about z, scale (2,3,4), rotate 90 deg about x. It ends at (-4,-8,9). Where did it start?",
-    "options": [
-      "(3,2,2)",
-      "(4,3,2)",
-      "(2,3,2)",
-      "(3,2,-2)"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "For which values of k does the determinant of [[k,2],[3,k+1]] equal zero?",
-    "options": [
-      "k = 2 or k = 3",
-      "k = -2 or k = -3",
-      "k = -3 or k = 2",
-      "k = 3 or k = -2"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "A is 2x3 and B is 3x4. What size is AB?",
-    "options": [
-      "4x2",
-      "3x3",
-      "3x4",
-      "2x4"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "A is 4x2 and B is 2x5. What size is AB?",
-    "options": [
-      "4x2",
-      "5x4",
-      "2x2",
-      "4x5"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "A is mxn and B is pxq. When can you compute AB?",
-    "options": [
-      "m = q",
-      "m = p",
-      "n = p",
-      "n = q"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "A is 3x3 and B is 3x1. What size is AB?",
-    "options": [
-      "3x3",
-      "AB is not defined",
-      "1x3",
-      "3x1"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "A and B are both 2x3. Which statement is true?",
-    "options": [
-      "AB is not defined",
-      "AB is 2x3",
-      "AB is 2x2",
-      "AB is 3x3"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "A and B are both 3x4. What size is A + B?",
-    "options": [
-      "6x8",
-      "3x4",
-      "4x4",
-      "3x3"
+      "<-1, 7, 7>",
+      "<-2, 7, 7>",
+      "<-2, 7, -1>",
+      "<-3, 12, 12>"
     ],
     "answer": 1
   },
   {
-    "question": "Is AB always equal to BA for matrices?",
+    "question": "If a dot b = 0, the vectors are...",
     "options": [
+      "Opposite",
+      "Equal",
+      "Parallel",
+      "Perpendicular"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "a dot a equals...",
+    "options": [
+      "Zero",
+      "The length of a",
+      "Twice a",
+      "The length of a, squared"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Vectors AB and BA are...",
+    "options": [
+      "Both zero",
+      "Equal",
+      "Perpendicular",
+      "Opposites of each other"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "What is the unit vector in the direction of <-15, 8>?",
+    "options": [
+      "<-15/17, 8/17>",
+      "<-15/17, -8/17>",
+      "<-15/23, 8/23>",
+      "<-15/289, 8/289>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "What is the unit vector in the direction of <-3, -4>?",
+    "options": [
+      "<-3/5, -4/5>",
+      "<-3/25, -4/25>",
+      "<1, 1>",
+      "<-1/2, -2/3>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Can you add a 2D vector to a 3D vector?",
+    "options": [
+      "Only if both are unit vectors",
+      "No, sizes must match",
       "Yes, always",
-      "Only when A + B = 0",
-      "Only for square matrices",
-      "No, not in general"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "If I is the identity matrix of the right size, what is IA?",
-    "options": [
-      "0",
-      "A squared",
-      "A",
-      "I"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "What is the size of the transpose of a 2x3 matrix?",
-    "options": [
-      "3x3",
-      "2x2",
-      "2x3",
-      "3x2"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Compute [[1,2],[3,4]] times the column <1,1>.",
-    "options": [
-      "<3, 7>",
-      "<3, 4>",
-      "<4, 6>",
-      "<7, 3>"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "Compute [[2,0],[0,3]] times the column <1,2>.",
-    "options": [
-      "<2, 6>",
-      "<2, 5>",
-      "<1, 6>",
-      "<3, 6>"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "Compute [[1,2],[3,4]] + [[1,1],[1,1]].",
-    "options": [
-      "[[2,3],[4,5]]",
-      "[[2,2],[4,5]]",
-      "[[1,2],[3,4]]",
-      "[[2,3],[4,4]]"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "Compute 3 times [[1,2],[0,-1]].",
-    "options": [
-      "[[3,2],[0,-1]]",
-      "[[3,6],[0,3]]",
-      "[[4,5],[3,2]]",
-      "[[3,6],[0,-3]]"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "What is the inverse of [[2,0],[0,4]]?",
-    "options": [
-      "[[-2,0],[0,-4]]",
-      "[[0,2],[4,0]]",
-      "[[1/2,0],[0,1/4]]",
-      "[[2,0],[0,4]]"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "To undo a transformation with matrix M, you apply which matrix?",
-    "options": [
-      "M squared",
-      "The inverse of M",
-      "The transpose of M",
-      "Negative M"
+      "Only with a cross product"
     ],
     "answer": 1
   },
   {
-    "question": "Transform A is applied first, then B. Which single matrix does both?",
+    "question": "Compute <4, -1, 4> + <-2, -3, -3>.",
     "options": [
-      "AB",
-      "A inverse times B",
-      "BA",
-      "A + B"
+      "<-8, 3, -12>",
+      "<2, -4, 1>",
+      "<6, 2, 7>",
+      "<3, -4, 1>"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Which vector is parallel to <-3, -1>?",
+    "options": [
+      "<-5, -3>",
+      "<6, 3>",
+      "<6, 2>",
+      "<-1, -3>"
     ],
     "answer": 2
   },
   {
-    "question": "What is the determinant of [[2,1],[3,4]]?",
+    "question": "What is the length of <-2, -10, 11>?",
     "options": [
-      "-5",
-      "8",
-      "11",
-      "5"
+      "225",
+      "15",
+      "14",
+      "23"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Which vector is parallel to <-2, 1>?",
+    "options": [
+      "<1, -2>",
+      "<-2, -1>",
+      "<-6, 3>",
+      "<-6, 4>"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Compute -3 times <2, -1>.",
+    "options": [
+      "<2, 3>",
+      "<-6, 3>",
+      "<-6, -1>",
+      "<-1, -4>"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "a cross b equals...",
+    "options": [
+      "-(b cross a)",
+      "The zero vector",
+      "a dot b",
+      "b cross a"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "What is the length of <15, -8>?",
+    "options": [
+      "18",
+      "23",
+      "17",
+      "289"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Compute <-4, -2, 4> + <1, -4, 2>.",
+    "options": [
+      "<-4, 8, 8>",
+      "<-3, -6, 2>",
+      "<-2, -6, 6>",
+      "<-3, -6, 6>"
     ],
     "answer": 3
   },
   {
-    "question": "What is the determinant of [[1,2],[3,4]]?",
+    "question": "Which has no direction?",
     "options": [
-      "2",
-      "-10",
-      "-2",
-      "10"
+      "<0, 1>",
+      "<1, 0>",
+      "The zero vector",
+      "A unit vector"
     ],
     "answer": 2
   },
   {
-    "question": "What is the determinant of [[1,2],[2,4]]?",
+    "question": "For which k is <k, 4> perpendicular to <2, 3>?",
     "options": [
-      "8",
-      "2",
-      "0",
-      "6"
+      "k = -7",
+      "k = 3",
+      "k = 4",
+      "k = -6"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute <-1, 4> + <5, -5>.",
+    "options": [
+      "<4, -1>",
+      "<5, -1>",
+      "<-6, 9>",
+      "<4, 9>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "In 3D, what does a cross product of two vectors give?",
+    "options": [
+      "A vector perpendicular to both",
+      "A single number",
+      "A vector parallel to both",
+      "A matrix"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "What is the length of the zero vector?",
+    "options": [
+      "1",
+      "Undefined",
+      "-1",
+      "0"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute 3 times <2, 3> + <-2, 2>.",
+    "options": [
+      "<8, 7>",
+      "<0, 15>",
+      "<4, 11>",
+      "<4, 5>"
     ],
     "answer": 2
   },
   {
-    "question": "What is the determinant of the 2x2 identity matrix?",
+    "question": "Compute <-1, 0, 0> cross <0, 2, 0>.",
+    "options": [
+      "<0, 0, -1>",
+      "<0, 0, -2>",
+      "<0, -2, 0>",
+      "<0, 0, 2>"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Compute <4, 1, -3> + <1, -2, -3>.",
+    "options": [
+      "<5, -1, 0>",
+      "<4, -2, 9>",
+      "<3, 3, 0>",
+      "<5, -1, -6>"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute A = (-2,-3,-2), B = (-1,2,-1). Vector AB.",
+    "options": [
+      "<2, -6, 2>",
+      "<1, 5, 1>",
+      "<-1, -5, -1>",
+      "<2, 6, 2>"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "A unit vector has what length?",
     "options": [
       "1",
       "0",
@@ -300,783 +250,833 @@
     "answer": 0
   },
   {
-    "question": "What is the determinant of [[3,0],[0,5]]?",
+    "question": "Compute -2 times <4, -2, -2>.",
     "options": [
-      "0",
-      "15",
-      "-15",
+      "<-8, 4, 4>",
+      "<2, -4, -4>",
+      "<8, -4, -4>",
+      "<-8, 4, -2>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute <-2, -1> dot <-1, 3>.",
+    "options": [
+      "5",
+      "-5",
+      "1",
+      "-1"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute <-4, 4> + <-5, -4>.",
+    "options": [
+      "<-9, 0>",
+      "<-9, 8>",
+      "<-8, 0>",
+      "<0, -9>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute <-2, -3, 0> dot <-2, -1, 1>.",
+    "options": [
+      "<4, 3, 0>",
+      "7",
+      "-7",
       "8"
     ],
     "answer": 1
   },
   {
-    "question": "What is the determinant of [[2,5],[0,3]]?",
+    "question": "If a dot b > 0, the angle between them is...",
     "options": [
-      "6",
-      "11",
-      "10",
-      "5"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "What is the determinant of [[0,1],[1,0]]?",
-    "options": [
-      "-1",
-      "1",
-      "0",
-      "2"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "What is the determinant of diag(1,2,3)?",
-    "options": [
-      "5",
-      "9",
-      "6",
-      "0"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "What is the determinant of the 3x3 identity matrix?",
-    "options": [
-      "0",
-      "3",
-      "1",
-      "-1"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "For which k is the determinant of [[k,4],[1,2]] equal to zero?",
-    "options": [
-      "k = 4",
-      "k = 1",
-      "k = -2",
-      "k = 2"
+      "Exactly 180 deg",
+      "Exactly 90 deg",
+      "Obtuse (over 90 deg)",
+      "Acute (under 90 deg)"
     ],
     "answer": 3
   },
   {
-    "question": "For which k is the determinant of [[1,k],[2,6]] equal to zero?",
+    "question": "Compute <3, 1, 1> dot <3, 0, 2>.",
     "options": [
-      "k = 2",
-      "k = 3",
-      "k = 6",
-      "k = 1"
+      "7",
+      "-11",
+      "<9, 0, 2>",
+      "11"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute <2, 0, 0> cross <0, 0, 3>.",
+    "options": [
+      "<0, 0, 6>",
+      "<0, -6, 0>",
+      "<6, 0, 0>",
+      "<0, 0, 0>"
     ],
     "answer": 1
   },
   {
-    "question": "A matrix with determinant 0 is called what?",
-    "options": [
-      "Singular",
-      "Orthogonal",
-      "Invertible",
-      "Identity"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "If det A = 0, is A invertible?",
-    "options": [
-      "Yes",
-      "No",
-      "Only if it is symmetric",
-      "Only if it is 2x2"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "If det A = 3 for a 2x2 matrix A, what is det(2A)?",
-    "options": [
-      "9",
-      "6",
-      "3",
-      "12"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "A transformation matrix has determinant 4. By what factor does it scale areas?",
-    "options": [
-      "16",
-      "2",
-      "4",
-      "1/4"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "A transformation matrix has determinant -1. What does it do?",
-    "options": [
-      "Shrinks everything to a point",
-      "Keeps orientation and area",
-      "Flips orientation, keeps area",
-      "Doubles areas"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "What happens to a determinant if you swap two rows?",
-    "options": [
-      "Nothing",
-      "It doubles",
-      "It becomes zero",
-      "It changes sign"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "What is the determinant of a matrix with a row of all zeros?",
-    "options": [
-      "It is undefined",
-      "0",
-      "-1",
-      "1"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "If det A = 0, what can be said about Ax = b?",
-    "options": [
-      "Exactly one solution always",
-      "No unique solution",
-      "It always has a solution",
-      "No solution always"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "What is the determinant of a 2D rotation matrix?",
-    "options": [
-      "0",
-      "1",
-      "2",
-      "-1"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "What is the determinant of a 2D reflection matrix?",
-    "options": [
-      "2",
-      "1",
-      "0",
-      "-1"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Scale by (2,3) about the origin. Where does (1,1) go?",
-    "options": [
-      "(3,2)",
-      "(1,1)",
-      "(2,3)",
-      "(3,4)"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Scale by (3,3) about the origin. Where does (2,-1) go?",
-    "options": [
-      "(-6,3)",
-      "(6,-3)",
-      "(5,2)",
-      "(6,3)"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "Scale by (0.5, 0.5) about the origin. Where does (4,6) go?",
-    "options": [
-      "(8,12)",
-      "(4,6)",
-      "(2,6)",
-      "(2,3)"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Scale by (4,1) about the origin. Where does (3,5) go?",
-    "options": [
-      "(7,6)",
-      "(3,20)",
-      "(12,20)",
-      "(12,5)"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Which matrix scales x by 2 and y by 5?",
-    "options": [
-      "[[5,0],[0,2]]",
-      "[[0,2],[5,0]]",
-      "[[2,5],[0,0]]",
-      "[[2,0],[0,5]]"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "A shape has area 4. After scaling by 2 (x) and 3 (y), what is its area?",
-    "options": [
-      "24",
-      "6",
-      "9",
-      "12"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "Scaling by (1,-1) is the same as what?",
-    "options": [
-      "Reflection across the x-axis",
-      "Rotation by 180 deg",
-      "No change",
-      "Reflection across the y-axis"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "kx is twice ky and the area becomes 8 times larger. Where does (1,3) go?",
-    "options": [
-      "(4,12)",
-      "(4,6)",
-      "(8,6)",
-      "(2,6)"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "To undo scaling by (2,4), which scaling do you apply?",
-    "options": [
-      "(1/2, 1/4)",
-      "(1/4, 1/2)",
-      "(2,4)",
-      "(-2,-4)"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "After scaling by (2,3) a point is at (6,9). Where was it originally?",
-    "options": [
-      "(3,3)",
-      "(4,6)",
-      "(12,27)",
-      "(3,6)"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "Rotate (1,0) by 90 deg counterclockwise about the origin.",
-    "options": [
-      "(0,-1)",
-      "(-1,0)",
-      "(1,1)",
-      "(0,1)"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Rotate (0,1) by 90 deg counterclockwise about the origin.",
-    "options": [
-      "(0,-1)",
-      "(0,1)",
-      "(1,0)",
-      "(-1,0)"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Rotate (2,3) by 90 deg counterclockwise about the origin.",
-    "options": [
-      "(3,2)",
-      "(-3,2)",
-      "(-2,-3)",
-      "(3,-2)"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "Rotate (1,1) by 90 deg counterclockwise about the origin.",
-    "options": [
-      "(1,-1)",
-      "(-1,-1)",
-      "(1,1)",
-      "(-1,1)"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Rotate (-2,0) by 90 deg counterclockwise about the origin.",
-    "options": [
-      "(-2,0)",
-      "(2,0)",
-      "(0,-2)",
-      "(0,2)"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Rotate (3,1) by 180 deg about the origin.",
+    "question": "What is the midpoint of (-3,-4) and (3,-6)?",
     "options": [
       "(3,-1)",
-      "(1,3)",
-      "(-3,-1)",
-      "(-3,1)"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Rotate (1,2) by 270 deg counterclockwise about the origin.",
-    "options": [
-      "(2,-1)",
-      "(-2,1)",
-      "(-2,-1)",
-      "(-1,-2)"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "Rotate (1,0) by 60 deg counterclockwise about the origin.",
-    "options": [
-      "(1/2, -sqrt3/2)",
-      "(1/2, sqrt3/2)",
-      "(-1/2, sqrt3/2)",
-      "(sqrt3/2, 1/2)"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "Rotate (1,0) by 45 deg counterclockwise about the origin.",
-    "options": [
-      "(sqrt2/2, -sqrt2/2)",
-      "(1/2, 1/2)",
-      "(sqrt2/2, sqrt2/2)",
-      "(1,1)"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "What does rotating a point by 360 deg do?",
-    "options": [
-      "Reflects it",
-      "Doubles its distance",
-      "Leaves it unchanged",
-      "Moves it to the origin"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Which matrix rotates points 90 deg counterclockwise?",
-    "options": [
-      "[[-1,0],[0,-1]]",
-      "[[0,1],[-1,0]]",
-      "[[1,0],[0,1]]",
-      "[[0,-1],[1,0]]"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Which matrix rotates points by 180 deg?",
-    "options": [
-      "[[-1,0],[0,-1]]",
-      "[[-1,0],[0,1]]",
-      "[[0,-1],[1,0]]",
-      "[[1,0],[0,-1]]"
-    ],
-    "answer": 0
-  },
-  {
-    "question": "What does a rotation about the origin preserve?",
-    "options": [
-      "The x-coordinate",
-      "Distance from the origin",
-      "The y-coordinate",
-      "The slope of lines"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "Rotating by 90 deg counterclockwise twice is the same as what?",
-    "options": [
-      "A reflection",
-      "Rotating by 360 deg",
-      "No change",
-      "Rotating by 180 deg"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "To undo a 90 deg counterclockwise rotation, you should do what?",
-    "options": [
-      "Rotate 90 deg counterclockwise",
-      "Scale by -1",
-      "Rotate 90 deg clockwise",
-      "Reflect across the x-axis"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "After a 90 deg counterclockwise rotation a point lands at (0,5). Where was it?",
-    "options": [
-      "(0,-5)",
-      "(5,5)",
-      "(5,0)",
-      "(-5,0)"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Reflect (3,2) across the x-axis.",
-    "options": [
-      "(-3,-2)",
-      "(3,-2)",
-      "(2,3)",
-      "(-3,2)"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "Reflect (3,2) across the y-axis.",
-    "options": [
-      "(2,3)",
-      "(-3,2)",
-      "(3,-2)",
-      "(-3,-2)"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "Reflect (3,2) across the line y = x.",
-    "options": [
-      "(3,-2)",
-      "(-3,2)",
-      "(-2,-3)",
-      "(2,3)"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Reflect (4,-1) through the origin (point reflection).",
-    "options": [
-      "(4,1)",
       "(1,-4)",
-      "(-4,-1)",
-      "(-4,1)"
+      "(0,-10)",
+      "(0,-5)"
     ],
     "answer": 3
   },
   {
-    "question": "Which matrix reflects points across the x-axis?",
+    "question": "Orthogonally project <-2, -3, 1> onto the xz-plane.",
     "options": [
-      "[[-1,0],[0,1]]",
-      "[[0,1],[1,0]]",
-      "[[-1,0],[0,-1]]",
-      "[[1,0],[0,-1]]"
+      "<-2, -3, 0>",
+      "<-2, -3, 1>",
+      "<-2, 0, 1>",
+      "<0, -3, 1>"
     ],
-    "answer": 3
+    "answer": 2
   },
   {
-    "question": "Which matrix reflects points across the y-axis?",
+    "question": "Orthogonally project <-3, 2> onto the x-axis.",
     "options": [
-      "[[-1,0],[0,1]]",
-      "[[0,1],[1,0]]",
-      "[[1,0],[0,-1]]",
-      "[[1,0],[0,1]]"
+      "<-3, 0>",
+      "<-3, 2>",
+      "<0, 0>",
+      "<2, -3>"
     ],
     "answer": 0
   },
   {
-    "question": "Reflecting a point across the x-axis twice gives what?",
+    "question": "What is the midpoint of (-2,1) and (2,3)?",
     "options": [
-      "A rotation by 90 deg",
-      "The original point",
-      "A point twice as far away",
-      "A point on the y-axis"
+      "(1,3)",
+      "(0,4)",
+      "(4,2)",
+      "(0,2)"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Angle between <-4, 2> and <2, 4>: acute, obtuse or right?",
+    "options": [
+      "Obtuse",
+      "Acute",
+      "Right (90 deg)",
+      "Straight (180 deg)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "What is the unit vector in the direction of <12, -5>?",
+    "options": [
+      "<12/169, -5/169>",
+      "<12/13, -5/13>",
+      "<1, 1>",
+      "<12/17, -5/17>"
     ],
     "answer": 1
   },
   {
-    "question": "Reflect (2,5) across the line through the origin with normal <1,0>.",
+    "question": "a - a equals...",
     "options": [
-      "(-2,-5)",
-      "(-2,5)",
-      "(5,2)",
-      "(2,-5)"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "Reflect (3,4) across the line through the origin with normal <0,1>.",
-    "options": [
-      "(3,-4)",
-      "(-3,-4)",
-      "(-3,4)",
-      "(4,3)"
+      "The zero vector",
+      "a",
+      "-a",
+      "2a"
     ],
     "answer": 0
   },
   {
-    "question": "Reflect (1,0) across the line through the origin with normal <1,1>.",
+    "question": "Which vector is parallel to <-1, -3>?",
     "options": [
-      "(0,-1)",
-      "(1,1)",
-      "(0,1)",
-      "(-1,0)"
+      "<2, 6>",
+      "<0, -2>",
+      "<2, 7>",
+      "<-3, -1>"
     ],
     "answer": 0
   },
   {
-    "question": "Reflecting across the x-axis then the y-axis equals what?",
+    "question": "What is the midpoint of (4,-3) and (8,-1)?",
     "options": [
-      "Reflection across y = x",
-      "Scaling by 2",
-      "Rotation by 180 deg",
-      "The identity"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Reflect (1,2) across the y-axis, then scale by 2 (x) and 3 (y). Final point?",
-    "options": [
-      "(-3,4)",
-      "(-2,-6)",
-      "(-2,6)",
-      "(2,6)"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Scale by (2,2), then rotate 90 deg counterclockwise. Where does (1,0) go?",
-    "options": [
-      "(0,-2)",
-      "(-2,0)",
-      "(0,2)",
-      "(2,0)"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Rotate 90 deg counterclockwise, then scale by (3,1). Where does (0,2) go?",
-    "options": [
-      "(6,0)",
-      "(-6,0)",
-      "(-2,0)",
-      "(0,-6)"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "A rotation about the z-axis leaves which coordinate unchanged?",
-    "options": [
-      "x",
-      "None of them",
-      "y",
-      "z"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "A rotation about the x-axis leaves which coordinate unchanged?",
-    "options": [
-      "None of them",
-      "z",
-      "x",
-      "y"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Rotate (1,0,0) by 90 deg about the z-axis (right-hand rule).",
-    "options": [
-      "(-1,0,0)",
-      "(0,1,0)",
-      "(0,0,1)",
-      "(0,-1,0)"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "Rotate (0,1,0) by 90 deg about the x-axis (right-hand rule).",
-    "options": [
-      "(1,0,0)",
-      "(0,0,1)",
-      "(0,-1,0)",
-      "(0,0,-1)"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "Rotate (0,0,1) by 90 deg about the x-axis (right-hand rule).",
-    "options": [
-      "(1,0,0)",
-      "(0,0,-1)",
-      "(0,1,0)",
-      "(0,-1,0)"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Rotate (1,0,0) by 90 deg about the y-axis (right-hand rule).",
-    "options": [
-      "(-1,0,0)",
-      "(0,0,1)",
-      "(0,0,-1)",
-      "(0,1,0)"
-    ],
-    "answer": 2
-  },
-  {
-    "question": "Rotate (1,2,3) by 180 deg about the z-axis.",
-    "options": [
-      "(-1,-2,3)",
-      "(1,2,-3)",
-      "(-1,2,3)",
-      "(-1,-2,-3)"
+      "(6,-2)",
+      "(4,2)",
+      "(2,1)",
+      "(12,-4)"
     ],
     "answer": 0
   },
   {
-    "question": "Rotate (1,2,3) by 180 deg about the x-axis.",
+    "question": "Compute <0, 1, 0> cross <0, 0, 3>.",
     "options": [
-      "(1,-2,-3)",
-      "(-1,-2,3)",
-      "(1,-2,3)",
-      "(-1,2,3)"
+      "<0, 0, 0>",
+      "<3, 0, 0>",
+      "<0, 3, 0>",
+      "<0, 0, 3>"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Which vector is perpendicular to <-2, -1>?",
+    "options": [
+      "<2, -1>",
+      "<-2, 1>",
+      "<1, 2>",
+      "<-1, 2>"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute <0, 0, 3> dot <3, 0, -1>.",
+    "options": [
+      "3",
+      "-4",
+      "<0, 0, -3>",
+      "-3"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute A = (3,4), B = (3,-1). Vector AB.",
+    "options": [
+      "<9, -4>",
+      "<6, 3>",
+      "<0, -5>",
+      "<1, -4>"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "For which k is <k, 6> perpendicular to <3, -2>?",
+    "options": [
+      "k = 4",
+      "k = -4",
+      "k = 3",
+      "k = 5"
     ],
     "answer": 0
   },
   {
-    "question": "A point rotated 90 deg about the z-axis lands at (0,2,3). Where was it?",
+    "question": "What is the unit vector in the direction of <3, -4>?",
     "options": [
-      "(0,-2,3)",
-      "(2,0,3)",
-      "(-2,0,3)",
-      "(2,0,-3)"
-    ],
-    "answer": 1
-  },
-  {
-    "question": "A point rotated 180 deg about the x-axis lands at (1,2,3). Where was it?",
-    "options": [
-      "(1,2,-3)",
-      "(-1,-2,-3)",
-      "(-1,2,3)",
-      "(1,-2,-3)"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Scale by (2,3,4) along x, y, z. Where does (1,2,3) go?",
-    "options": [
-      "(3,5,7)",
-      "(1,6,12)",
-      "(2,3,4)",
-      "(2,6,12)"
-    ],
-    "answer": 3
-  },
-  {
-    "question": "Which matrix scales x by 2, y by 3 and z by 4?",
-    "options": [
-      "[[1,0,0],[0,1,0],[0,0,1]]",
-      "[[4,0,0],[0,3,0],[0,0,2]]",
-      "[[2,0,0],[0,3,0],[0,0,4]]",
-      "[[2,3,4],[0,0,0],[0,0,0]]"
+      "<1/2, -2/3>",
+      "<3/7, -4/7>",
+      "<3/5, -4/5>",
+      "<3/5, 4/5>"
     ],
     "answer": 2
   },
   {
-    "question": "After scaling by (2,3,4) a vertex is at (4,6,8). Where was it?",
+    "question": "Compute A = (4,2,-4), B = (-2,-3,1). Vector AB.",
     "options": [
-      "(4,6,8)",
-      "(8,18,32)",
-      "(6,9,12)",
-      "(2,2,2)"
+      "<6, 5, -5>",
+      "<-6, -5, 5>",
+      "<-8, -6, -4>",
+      "<-5, -4, 6>"
     ],
-    "answer": 3
+    "answer": 1
   },
   {
-    "question": "Scaling by diag(2,3,1) puts A' at (2,3,1) and B' at (6,9,4). Find the original vector AB.",
+    "question": "Which vector is parallel to <4, 2>?",
     "options": [
-      "<2, 3, 3>",
-      "<8, 18, 3>",
-      "<2, 2, 3>",
-      "<4, 6, 3>"
+      "<-4, -2>",
+      "<-4, -1>",
+      "<4, -2>",
+      "<2, 4>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute -<2, -2>.",
+    "options": [
+      "<2, -2>",
+      "<-2, -2>",
+      "<-2, 2>",
+      "<2, 2>"
     ],
     "answer": 2
   },
   {
-    "question": "Orthogonally project (3,4,5) onto the xy-plane.",
+    "question": "What is the length of <3, 6, -2>?",
     "options": [
-      "(0,0,5)",
-      "(3,4,0)",
-      "(3,4,5)",
-      "(3,0,5)"
+      "7",
+      "49",
+      "6",
+      "11"
     ],
-    "answer": 1
+    "answer": 0
   },
   {
-    "question": "Orthogonally project (3,4,5) onto the xz-plane.",
+    "question": "Compute 2 times <4, 1> + <-2, 3>.",
     "options": [
-      "(3,4,0)",
-      "(3,0,5)",
-      "(0,4,0)",
-      "(0,4,5)"
+      "<6, 5>",
+      "<6, 4>",
+      "<2, 4>",
+      "<4, 8>"
     ],
-    "answer": 1
+    "answer": 0
   },
   {
-    "question": "Orthogonally project (7,2,-1) onto the yz-plane.",
+    "question": "What is the length of <4, 7, 4>?",
     "options": [
-      "(0,0,-1)",
-      "(0,2,-1)",
-      "(7,0,-1)",
-      "(7,2,0)"
+      "9",
+      "81",
+      "10",
+      "8"
     ],
-    "answer": 1
+    "answer": 0
   },
   {
-    "question": "Which matrix orthogonally projects onto the xy-plane?",
+    "question": "Compute -2 times <4, 2, 2>.",
     "options": [
-      "[[0,0,0],[0,0,0],[0,0,1]]",
-      "[[0,0,0],[0,1,0],[0,0,1]]",
-      "[[1,0,0],[0,0,0],[0,0,1]]",
-      "[[1,0,0],[0,1,0],[0,0,0]]"
+      "<8, 4, 4>",
+      "<2, 0, 0>",
+      "<-8, -4, 2>",
+      "<-8, -4, -4>"
     ],
     "answer": 3
   },
   {
-    "question": "Projecting a point onto the xy-plane twice gives what?",
+    "question": "Orthogonally project <2, -1> onto the x-axis.",
     "options": [
-      "Double the point",
-      "Same result as projecting once",
-      "The origin",
-      "The original point"
+      "<-1, 2>",
+      "<0, -1>",
+      "<2, -1>",
+      "<2, 0>"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute <-3, 3> - <3, -2>.",
+    "options": [
+      "<-5, 5>",
+      "<-6, 5>",
+      "<-6, 1>",
+      "<6, -5>"
     ],
     "answer": 1
   },
   {
-    "question": "Rotate (1,2,5) by 90 deg about z, then project onto the xy-plane.",
+    "question": "If a dot b < 0, the angle between them is...",
     "options": [
-      "(1,2,0)",
-      "(2,1,0)",
-      "(-2,1,0)",
-      "(-2,1,5)"
+      "Acute (under 90 deg)",
+      "Exactly 0 deg",
+      "Obtuse (over 90 deg)",
+      "Exactly 90 deg"
     ],
     "answer": 2
   },
   {
-    "question": "A 3x3 matrix times a 3x1 column gives what size?",
+    "question": "What does a dot product of two vectors give?",
     "options": [
-      "3x3",
-      "3x1",
-      "1x3",
-      "1x1"
+      "A vector",
+      "A single number",
+      "An angle only",
+      "A matrix"
     ],
     "answer": 1
+  },
+  {
+    "question": "Which operation turns two vectors into a number?",
+    "options": [
+      "Dot product",
+      "Cross product",
+      "Scaling",
+      "Vector addition"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute <-4, -4> dot <4, 3>.",
+    "options": [
+      "-28",
+      "-29",
+      "-4",
+      "-27"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute <4, 3> dot <1, -2>.",
+    "options": [
+      "-5",
+      "-2",
+      "<4, -6>",
+      "2"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Which vector has length 1?",
+    "options": [
+      "<1, 1>",
+      "<2, 0>",
+      "<1, -1>",
+      "<0, -1>"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Angle between <4, -3> and <-1, -1>: acute, obtuse or right?",
+    "options": [
+      "Straight (180 deg)",
+      "Obtuse",
+      "Acute",
+      "Right (90 deg)"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Compute <-4, 4> - <-1, -5>.",
+    "options": [
+      "<-3, 9>",
+      "<-5, -1>",
+      "<-3, -1>",
+      "<3, -9>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute A = (3,4,-4), B = (-1,3,-4). Vector AB.",
+    "options": [
+      "<-3, 12, 16>",
+      "<-4, -1, 0>",
+      "<4, 1, 0>",
+      "<-3, 0, 1>"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Compute <-4, 3> dot <2, 1>.",
+    "options": [
+      "<-8, 3>",
+      "-6",
+      "-5",
+      "-11"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "What is the length of <2, 10, -11>?",
+    "options": [
+      "14",
+      "15",
+      "16",
+      "225"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Compute <-1, -3, 3> dot <-2, 3, 0>.",
+    "options": [
+      "7",
+      "-7",
+      "-6",
+      "-8"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Compute 2 times <2, 2> + <4, 2>.",
+    "options": [
+      "<6, 4>",
+      "<12, 8>",
+      "<8, 6>",
+      "<8, 4>"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Angle between <4, -1> and <3, -2>: acute, obtuse or right?",
+    "options": [
+      "Right (90 deg)",
+      "Straight (180 deg)",
+      "Obtuse",
+      "Acute"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "For which k is <k, 3> perpendicular to <3, -3>?",
+    "options": [
+      "k = 3",
+      "k = 2",
+      "k = 4",
+      "k = -3"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Which vector is perpendicular to <5, -2>?",
+    "options": [
+      "<-5, -2>",
+      "<5, 2>",
+      "<-2, 5>",
+      "<2, 5>"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute -1 times <1, 3>.",
+    "options": [
+      "<-1, -3>",
+      "<0, 2>",
+      "<-1, 3>",
+      "<-1, -2>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute 2 times <2, -3, 3>.",
+    "options": [
+      "<-4, 6, -6>",
+      "<4, -6, 6>",
+      "<4, -3, 6>",
+      "<4, -6, 3>"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "What is the distance between (-3,-3) and (-7,-6)?",
+    "options": [
+      "6",
+      "5",
+      "4",
+      "7"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Which vector is parallel to <3, 4>?",
+    "options": [
+      "<-6, -8>",
+      "<4, 5>",
+      "<-6, -7>",
+      "<4, 3>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Is a dot b always equal to b dot a?",
+    "options": [
+      "Yes, always",
+      "No, never",
+      "Only in 2D",
+      "Only if a = b"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute 3 times <-5, -1>.",
+    "options": [
+      "<-2, 2>",
+      "<-15, -3>",
+      "<-15, -2>",
+      "<-5, -3>"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Compute <-1, 1, 0> dot <2, 0, 0>.",
+    "options": [
+      "-1",
+      "<-2, 0, 0>",
+      "-3",
+      "-2"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Orthogonally project <-2, 2, -4> onto the xz-plane.",
+    "options": [
+      "<0, 2, -4>",
+      "<-2, 2, -4>",
+      "<-2, 2, 0>",
+      "<-2, 0, -4>"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "For which k is <k, 4> perpendicular to <2, -3>?",
+    "options": [
+      "k = 4",
+      "k = -6",
+      "k = 6",
+      "k = 7"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Which vector is perpendicular to <5, 4>?",
+    "options": [
+      "<-4, -5>",
+      "<4, -5>",
+      "<5, -4>",
+      "<4, 5>"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Which vector is parallel to <-3, 4>?",
+    "options": [
+      "<-5, 2>",
+      "<4, -3>",
+      "<6, -7>",
+      "<6, -8>"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Which vector is perpendicular to <3, 5>?",
+    "options": [
+      "<-3, 5>",
+      "<5, 3>",
+      "<-5, 3>",
+      "<-5, -3>"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "What is the length of <4, -3>?",
+    "options": [
+      "4",
+      "5",
+      "6",
+      "25"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Compute A = (-4,4), B = (1,-3). Vector AB.",
+    "options": [
+      "<5, -7>",
+      "<6, -6>",
+      "<-3, 1>",
+      "<-4, -12>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute <-1, 2, 0> dot <2, -2, 0>.",
+    "options": [
+      "6",
+      "-7",
+      "-5",
+      "-6"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "What is the unit vector in the direction of <-12, 5>?",
+    "options": [
+      "<-12/13, -5/13>",
+      "<-12/169, 5/169>",
+      "<-12/13, 5/13>",
+      "<-12/17, 5/17>"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Compute <4, -2> dot <2, 1>.",
+    "options": [
+      "6",
+      "5",
+      "10",
+      "0"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute <2, -3> dot <3, 1>.",
+    "options": [
+      "<6, -3>",
+      "2",
+      "-3",
+      "3"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute <1, -2, 0> dot <-2, 3, -3>.",
+    "options": [
+      "-9",
+      "8",
+      "-7",
+      "-8"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "What is the midpoint of (-4,3) and (-2,1)?",
+    "options": [
+      "(2,-2)",
+      "(-6,4)",
+      "(-3,2)",
+      "(1,-1)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Multiplying a vector by -1 does what?",
+    "options": [
+      "Doubles its length",
+      "Rotates it 90 deg",
+      "Leaves it unchanged",
+      "Flips its direction"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Angle between <-4, 1> and <4, -2>: acute, obtuse or right?",
+    "options": [
+      "Obtuse",
+      "Straight (180 deg)",
+      "Right (90 deg)",
+      "Acute"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "For which k is <k, 6> perpendicular to <2, -2>?",
+    "options": [
+      "k = 6",
+      "k = 5",
+      "k = 7",
+      "k = -6"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Multiplying a vector by 2 does what to its length?",
+    "options": [
+      "Leaves it unchanged",
+      "Halves it",
+      "Squares it",
+      "Doubles it"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute 2 times <-3, 4> + <-4, 1>.",
+    "options": [
+      "<-10, 9>",
+      "<-14, 10>",
+      "<-7, 5>",
+      "<-10, 5>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute <0, 0, 1> cross <0, 2, 0>.",
+    "options": [
+      "<0, 2, 0>",
+      "<0, 0, 2>",
+      "<0, 0, 0>",
+      "<-2, 0, 0>"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "What is the unit vector in the direction of <15, -8>?",
+    "options": [
+      "<5/6, -4/9>",
+      "<15/17, -8/17>",
+      "<15/289, -8/289>",
+      "<15/23, -8/23>"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "a cross a equals...",
+    "options": [
+      "The zero vector",
+      "a dot a",
+      "1",
+      "a"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "What is the unit vector in the direction of <-8, -15>?",
+    "options": [
+      "<-4/9, -5/6>",
+      "<-8/289, -15/289>",
+      "<-8/23, -15/23>",
+      "<-8/17, -15/17>"
+    ],
+    "answer": 3
+  },
+  {
+    "question": "Compute 4 times <2, 3, 3>.",
+    "options": [
+      "<8, 12, 12>",
+      "<-8, -12, -12>",
+      "<8, 3, 12>",
+      "<6, 7, 7>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Orthogonally project <-5, 4> onto the y-axis.",
+    "options": [
+      "<5, 0>",
+      "<0, 4>",
+      "<-5, 4>",
+      "<0, 0>"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Orthogonally project <-4, 2, 1> onto the yz-plane.",
+    "options": [
+      "<0, 2, 1>",
+      "<-4, 0, 1>",
+      "<-4, 2, 1>",
+      "<-4, 2, 0>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute 2 times <4, 1> + <4, 1>.",
+    "options": [
+      "<4, 1>",
+      "<16, 4>",
+      "<12, 3>",
+      "<8, 2>"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "What is the midpoint of (1,-1) and (3,1)?",
+    "options": [
+      "(2,2)",
+      "(4,0)",
+      "(2,0)",
+      "(3,1)"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Compute 3 times <-3, 4> + <4, -1>.",
+    "options": [
+      "<-5, 11>",
+      "<-5, 3>",
+      "<-13, 13>",
+      "<3, 9>"
+    ],
+    "answer": 0
+  },
+  {
+    "question": "Compute <-5, -4> + <4, 3>.",
+    "options": [
+      "<-9, -7>",
+      "<-20, -12>",
+      "<-1, -1>",
+      "<-1, -7>"
+    ],
+    "answer": 2
   }
 ]
