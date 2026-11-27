@@ -277,14 +277,28 @@ static void GrantReward(Reward reward, CP_Vector boxPos)
         break;
     }
 }
-/* picks a question and shuffles its options so the answer isn't always in the same slot */
+/* 
+Opens the question popup.
+   1. Pauses the game (awaitingQuestion = 1).
+   2. Asks the Question system for a random, not-recently-used question.
+   3. Shuffles the ORDER the four options are shown in, so the correct answer
+      is not always in the same slot. The Question data itself is never
+      modified (it is const and shared); only optionOrder changes.
+   4. Records which screen slot now holds the correct answer in correctOption.
+   If no questions were loaded (currentQuestion == NULL) a fallback
+   "What is A?" popup is used where option 0 (A) is correct, so the game
+   never gets stuck waiting on a missing questions.json.*/
 
 static void AskQuestion(void){
     int i;
-    
+        
+    //freezes updates; DrawQuestionPopup now runs each frame
         awaitingQuestion = 1;
-    currentQuestion = Questions_Pick();
     
+    //NULL if nothing is loaded
+    currentQuestion = Questions_Pick();
+        
+        //start with the identity order: slot i shows option i
         for (i = 0; i < OPTION_COUNT; i++)
         optionOrder[i] = i;
     
@@ -293,15 +307,24 @@ static void AskQuestion(void){
         correctOption = 0;   /* fallback: "What is A?" -> option A */
         return;
         }
-    
-        for (i = OPTION_COUNT - 1; i > 0; i--)   /* Fisher-Yates */
+
+        /* isher-Yates shuffle: walk from the last slot down to slot 1 and swap each
+           slot with a random slot at or before it. This gives every ordering the
+           same probability (a naive "swap with any slot" shuffle would be biased).*/
+        for (i = OPTION_COUNT - 1; i > 0; i--)   
          {
+
+        //random slot in [0,i]
         int j = RandomIndex(i + 1);
+
+        //swap optionOrder[i] and optionOrder[j]
         int t = optionOrder[i];
         optionOrder[i] = optionOrder[j];
         optionOrder[j] = t;
         }
-    
+        /* Find the slot that now shows the original correct option.
+      optionOrder[slot] holds the original option index, so the slot whose
+      entry equals currentQuestion->answer is the one the player must click. */
         for (i = 0; i < OPTION_COUNT; i++)
          if (optionOrder[i] == currentQuestion->answer)
          correctOption = i;
@@ -321,7 +344,9 @@ static void TriggerPowerupBox(CP_Vector boxPos)
         GrantReward(REWARD_SCATTER, boxPos);
     else
     {
-        /* rolls 3, 4 and 5: 3 in 6, i.e. a 1/2 chance */
+        /* rolls 3, 4 and 5: 3 in 6, i.e. a 1/2 chance 
+        question system: the reward is granted later, in DrawQuestionPopup,
+        only if the player answers correctly */
         AskQuestion();
     }
 }
@@ -978,11 +1003,27 @@ static void DrawAmmo(void)
     }
 }
 
+/* Draws the multiple-choice popup and handles the player's answer.
+   Called every frame from Game_Update while awaitingQuestion == 1.
+   - Draws a dim overlay, the question text and four answer buttons.
+   - A left click on a button ends the popup. Only the correct slot
+     (correctOption) grants a random reward; a wrong answer grants nothing.
+   - Pressing C is a developer cheat that skips the question and grants a reward.
+   If currentQuestion is NULL the fallback "What is A?" screen is drawn, which
+   also prints questionsLoaded so a load failure is visible on screen. */
 static void DrawQuestionPopup(void)
-{
+{   
+    /* letter shown in front of each slot */
     const char* labels[OPTION_COUNT] = { "A", "B", "C", "D" };
+
+    /* "<letter>. <option>" : OPTION_TEXT_LEN covers the option, 
+    +8 covers the letter, ". " and '\0' */
     char  line[OPTION_TEXT_LEN + 8];
+
+    /* horizontal middle of the window */
     float centerX = (float)CP_System_GetWindowWidth() * 0.5f;
+
+    /* question text sits near the top (18% down) */
     float titleY = (float)CP_System_GetWindowHeight() * 0.18f;
     int   i;
 
@@ -997,15 +1038,20 @@ static void DrawQuestionPopup(void)
     CP_Settings_TextSize(40.0f);
     if (currentQuestion)
     {
+        /* DrawTextBox word-wraps the text inside QUESTION_BOX_W; the box is shifted
+           left by half its width so it ends up centred on centerX */
         CP_Font_DrawTextBox(currentQuestion->text, centerX - QUESTION_BOX_W / 2.0f, titleY, QUESTION_BOX_W);
     }
     else
-    {
+    {   
+        /* fallback screen: no question available. Showing questionsLoaded tells the
+          developer why (-1 = file not found, 0 = file had no valid questions) */
         char dbg[64];
         snprintf(dbg, sizeof dbg, "What is A?  (loaded: %d)", questionsLoaded);
         CP_Font_DrawText(dbg, centerX, titleY);
     }
 
+    /* draw one button per screen slot: white box with black outline, black text */
     for (i = 0; i < OPTION_COUNT; i++)
     {
         CP_Settings_Stroke(CP_Color_Create(0, 0, 0, 255));
@@ -1016,29 +1062,39 @@ static void DrawQuestionPopup(void)
         CP_Settings_TextSize(30.0f);
         if (currentQuestion)    
         {
+            /* optionOrder[i] translates screen slot i into the real option index chosen by the shuffle */
             snprintf(line, sizeof line, "%s. %s", labels[i], currentQuestion->options[optionOrder[i]]);
             CP_Font_DrawText(line, optionX[i], optionY[i]);
         }
         else
+            /* fallback: just the letter */
             CP_Font_DrawText(labels[i], optionX[i], optionY[i]);
     }
 
+    /* answer handling: only react on the frame the mouse button goes down */
     if (CP_Input_MouseTriggered(MOUSE_BUTTON_LEFT))
     {
         float mx = CP_Input_GetMouseX();
         float my = CP_Input_GetMouseY();
 
         for (i = 0; i < OPTION_COUNT; i++)
-        {
+        {   
+            /* was this button clicked? */
             if (IsAreaClicked(optionX[i], optionY[i], OPTION_BTN_W, OPTION_BTN_H, mx, my))
             {
                 if (i == correctOption)
                 {
+
+                    /* RandomIndex(3) gives 0-2, which matches the Reward enum order (RELOAD, PIERCE, SCATTER).
+                       lastBoxPos is the box that triggered the question, so a scatter bursts from there. */
                     GrantReward((Reward)RandomIndex(3), lastBoxPos);   /* reload, pierce or scatter */
                 }
                 /* wrong answer: nothing happens, matches "bullet already deleted" */
 
+                /* close the popup (right or wrong) so the game resumes */
                 awaitingQuestion = 0;
+
+                /* stop here: one click answers at most one button */
                 return;
             }
         }
@@ -1709,11 +1765,17 @@ void Game_Init(void)
 
     Progress_LoadBackground();
 
+    /* Load the question bank (data-driven: edit questions.json, no recompile). Only the first
+       call reads the file, so reloading the level does not re-read it. Result is kept in
+       questionsLoaded so DrawQuestionPopup can report a failed load. */
     questionsLoaded = Questions_Load("Assets/questions.json");
+
+    /* no question is active until a box asks for one */
     currentQuestion = NULL;
 
     if (!seeded)
-    {
+    {   
+        /* different random rolls every launch */
         CP_Random_Seed((int)time(NULL));   /* different random rolls every launch */
         seeded = 1;
     }
@@ -1727,6 +1789,8 @@ void Game_Init(void)
     speedBoosted = 0;
     aiming = 0;
     ammo = levelStartAmmo;
+
+    /* a new level never starts with the question popup open */
     awaitingQuestion = 0;
     clearTimer = 0.0f;
     pierceAmmo = 0;
@@ -1734,7 +1798,10 @@ void Game_Init(void)
     for (i = 0; i < SHRAPNEL_MAX; i++)
         shrapnel[i].active = 0;
 
-        {
+        {   
+        /* Pre-compute answer button positions once (they never change while playing).
+       Buttons are centred horizontally and stacked from 42% down the window,
+       each one (button height + gap) below the previous. */
             float startY = h * 0.42f;
 
             for (i = 0; i < OPTION_COUNT; i++)
@@ -1757,6 +1824,7 @@ void Game_Update(void)
         return;
     }
 
+    /* while a question is open, all gameplay input and updates are skipped (the game is paused) */
     if (!awaitingQuestion)
     {
         /* swap between pen and normal pencil */
